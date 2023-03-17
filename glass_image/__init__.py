@@ -1,0 +1,1 @@
+WSCLEANDOCKER='alecthomson/wsclean:force_mask'
