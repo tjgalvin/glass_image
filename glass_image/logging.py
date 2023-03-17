@@ -5,6 +5,7 @@ import logging
 
 # Create logger
 logging.captureWarnings(True)
-logger = logging.getLogger("glass_image")
+logger = logging.getLogger(__name__)
 logger.setLevel(logging.WARNING)
 
+logger.addHandler(logging.StreamHandler())

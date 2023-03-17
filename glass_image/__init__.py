@@ -1,1 +1,1 @@
-WSCLEANDOCKER='alecthomson/wsclean:force_mask'
+WSCLEANDOCKER='docker://alecthomson/wsclean:force_mask'

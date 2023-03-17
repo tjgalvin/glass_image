@@ -8,5 +8,5 @@ from pathlib import Path
 class GPointing(NamedTuple):
     workdir: Path
     field: str
-    ms: str
+    ms: Path
     
