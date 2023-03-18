@@ -60,12 +60,14 @@ def image_cband(ms_path: Path, workdir: Optional[Path]=None, wsclean_img: Option
     image_round(wsclean_img=wsclean_img, point=point)
     
     for img_round in range(1, 5):
-        logger.info(f"Attempting selcalibration for round {img_round}")
+        logger.info(f"\n\nAttempting selcalibration for round {img_round}")
         selfcal_point = derive_apply_selfcal(in_point=point, img_round=img_round)
         
-        logger.info(f"Running imaging for round {img_round}")
+        logger.info(f"\n\nRunning imaging for round {img_round}")
         image_round(wsclean_img=wsclean_img, point=selfcal_point, img_round=img_round)
         
+        logger.info(f"\n\nUpdating current MS from {point.ms} to {selfcal_point.ms}")
+        point = selfcal_point
       
 def get_parser() -> ArgumentParser:
     parser = ArgumentParser(description="A simple imaging script for GLASS data")

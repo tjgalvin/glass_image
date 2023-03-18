@@ -16,12 +16,22 @@ class CasaSCOptions(NamedTuple):
 def selfcal_round_options(img_round: int) -> CasaSCOptions:
     logger.debug(f"Getting options for self-calibration")
     
-    options = CasaSCOptions()
+    options = CasaSCOptions(nspw=4)
     
-    if img_round > 1:
+    if img_round == 1:
+        options = CasaSCOptions(
+            solint='60s',
+            nspw=4
+        )
+    if img_round in (2, 3):
         options = CasaSCOptions(
             solint='10s',
-            nspw=int(img_round) + 1
+            nspw=4
+        )
+    if img_round >= 4:
+        options = CasaSCOptions(
+            solint='10s',
+            nspw=6
         )
 
     logger.info(f"Self-calibration options: {options}")
@@ -59,7 +69,8 @@ def derive_apply_selfcal(in_point: Pointing, img_round: int=0) -> Pointing:
         vis=str(in_point.ms),
         regridms=True,
         nspw=options.nspw,
-        outputvis=outms
+        outputvis=outms,
+        datacolumn='corrected'
     )
     
     out_point = Pointing(
@@ -68,7 +79,7 @@ def derive_apply_selfcal(in_point: Pointing, img_round: int=0) -> Pointing:
         ms=Path(outms)
     )
     
-    logger.info(f"Created {out_point}")
+    logger.info(f"Created {out_point.ms}")
     
     return out_point
     
