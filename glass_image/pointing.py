@@ -5,7 +5,7 @@ from typing import NamedTuple
 from pathlib import Path 
 
 
-class GPointing(NamedTuple):
+class Pointing(NamedTuple):
     workdir: Path
     field: str
     ms: Path

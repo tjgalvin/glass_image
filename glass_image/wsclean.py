@@ -2,19 +2,38 @@
 """
 import os
 from pathlib import Path
-from typing import NamedTuple
+from typing import NamedTuple, Optional
 from glob import glob
 
 from spython.main import Client as sclient
 
 from glass_image import WSCLEANDOCKER
 from glass_image.logging import logger
-from glass_image.pointing import GPointing
+from glass_image.pointing import Pointing
 
 
 class WSCleanCMD(NamedTuple):
     cmd: str
     outname: str
+
+
+class WSCleanOptions(NamedTuple):
+    psfwindow: int = 125
+    size: int = 7500
+    forcemask: float = 6
+    maskthresh: float = 7.5
+    autothresh: float = 1.0
+
+
+def image_round_options(img_round: int) -> WSCleanOptions:
+    logger.debug(f"Obtainer wsclean image options")
+
+    options = WSCleanOptions()
+
+    if img_round >= 1:
+        options = WSCleanOptions(maskthresh=6.0)
+
+    return options
 
 
 def pull_wsclean_container() -> Path:
@@ -33,31 +52,35 @@ def pull_wsclean_container() -> Path:
     return sclient_path
 
 
-def generate_wsclean_cmd(point: GPointing, img_round: int) -> WSCleanCMD:
-
-    forcemask = 6
-    psfwindow = 125
-    maskthresh = 5.0
-    autothresh = 1.0
-    size = 7500
+def generate_wsclean_cmd(point: Pointing, img_round: int) -> WSCleanCMD:
+    
+    # Get the options for this round of imaging
+    woptions = image_round_options(img_round=img_round)
 
     MS = f"{point.ms}"
 
-    outname = f"{point.field}_fm{forcemask}_psfw{psfwindow}_mt{maskthresh}_at{autothresh}_round{img_round}"
+    outname = (
+        f"{point.field}_"
+        f"fm{woptions.forcemask}_"
+        f"psfw{woptions.psfwindow}_"
+        f"mt{woptions.maskthresh}_"
+        f"at{woptions.autothresh}_"
+        f"round{img_round}"
+    )
     logger.debug(f"{outname=}")
 
     cmd = f"""wsclean 
     -abs-mem 100 
     -mgain 0.70 
-    -force-mask-rounds {forcemask} 
+    -force-mask-rounds {woptions.forcemask} 
     -nmiter 15 
     -niter 500000 
     -local-rms 
-    -auto-mask {maskthresh} 
-    -local-rms-window {psfwindow} 
-    -auto-threshold {autothresh} 
+    -auto-mask {woptions.maskthresh} 
+    -local-rms-window {woptions.psfwindow} 
+    -auto-threshold {woptions.autothresh} 
     -name {outname} 
-    -size {size} {size} 
+    -size {woptions.size} {woptions.size} 
     -scale 0.3asec 
     -weight briggs 0.5 
     -pol I 
@@ -83,7 +106,7 @@ def move_wsclean_out_into(dest_path: Path, outname: str) -> None:
 
     files = glob(f"{outname}*")
     logger.debug(f"Searched for files matching {outname}, found {len(files)}")
-    
+
     for file in files:
         file_path = Path(file)
         logger.debug(f"Moving {file} into {str(dest_path)}")
@@ -93,10 +116,9 @@ def move_wsclean_out_into(dest_path: Path, outname: str) -> None:
 def run_wsclean_cmd(
     wsclean_img: Path,
     wsclean_cmd: WSCleanCMD,
-    binddir: Path = None,
-    move_into: Path = None,
+    binddir: Optional[Path] = None,
+    move_into: Optional[Path] = None,
 ) -> None:
-
     binddir = Path(os.getcwd()) if binddir is None else binddir
     binddir_str = str(binddir)
 
