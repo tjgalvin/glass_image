@@ -7,13 +7,15 @@ readme = "README.md"
 packages = [{include = "glass_image"}]
 
 [tool.poetry.dependencies]
-python = "^3.8"
+python = ">=3.8,<3.9"
 astropy = "^5.2.1"
 scipy = "^1.10.1"
 numpy = "^1.24.2"
 matplotlib = "^3.7.0"
 aegeantools = "=2.2.0"
 spython = "^0.3.0"
+casatools = "^6.5.3.28"
+casatasks = "^6.5.3.28"
 
 [tool.poetry.group.dev.dependencies]
 black = "^23.1.0"
