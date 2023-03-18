@@ -3,7 +3,7 @@
 from pathlib import Path
 from typing import NamedTuple
 
-from casatasks import gaincal, applycal, mstransform, concat
+from casatasks import gaincal, applycal, mstransform, cvel
 
 from glass_image.logging import logger
 from glass_image.pointing import Pointing
@@ -68,9 +68,10 @@ def derive_apply_selfcal(in_point: Pointing, img_round: int=0) -> Pointing:
     in_ms_str = str(in_point.ms)
     concat_ms_str = f"{in_ms_str}_concat"
     
-    concat(
-        vis=[in_ms_str],
-        concatvis=concat_ms_str
+    cvel(
+        vis=in_ms_str,
+        outputvis=concat_ms_str,
+        mode='channel_b',
     )
 
     logger.info("Solutions applied. Regridding the MS and removing old DATA column. ")
