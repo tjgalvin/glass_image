@@ -59,7 +59,7 @@ def image_cband(ms_path: Path, workdir: Optional[Path]=None, wsclean_img: Option
     
     image_round(wsclean_img=wsclean_img, point=point)
     
-    for img_round in range(1, 2):
+    for img_round in range(1, 5):
         logger.info(f"Attempting selcalibration for round {img_round}")
         selfcal_point = derive_apply_selfcal(in_point=point, img_round=img_round)
         

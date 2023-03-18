@@ -19,7 +19,7 @@ class WSCleanCMD(NamedTuple):
 
 class WSCleanOptions(NamedTuple):
     psfwindow: int = 125
-    size: int = 7500
+    size: int = 5500
     forcemask: float = 6
     maskthresh: float = 7.5
     autothresh: float = 1.0
@@ -30,9 +30,16 @@ def image_round_options(img_round: int) -> WSCleanOptions:
 
     options = WSCleanOptions()
 
-    if img_round >= 1:
+    if img_round == 1:
         options = WSCleanOptions(maskthresh=6.0)
+    if img_round == 2:
+        options = WSCleanOptions(maskthresh=5.0)
+    if img_round == 3:
+        options = WSCleanOptions(maskthresh=4.0)
+    if img_round >= 4:
+        options = WSCleanOptions(maskthresh=3.0)
 
+    logger.info(f"WSClean Options for round {img_round} are {options}")
     return options
 
 
@@ -88,7 +95,6 @@ def generate_wsclean_cmd(point: Pointing, img_round: int) -> WSCleanCMD:
     -join-channels 
     -channels-out 8 
     -data-column DATA 
-    -log-time 
     {MS}"""
 
     cmd = " ".join([i.strip() for i in cmd.splitlines()])
