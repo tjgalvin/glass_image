@@ -3,14 +3,14 @@
 from pathlib import Path
 from typing import NamedTuple
 
-from casatasks import gaincal, applycal, mstransform
+from casatasks import gaincal, applycal, mstransform, concat
 
 from glass_image.logging import logger
 from glass_image.pointing import Pointing
 
 class CasaSCOptions(NamedTuple):
     solint: str = '60s'
-    nspw: int = 1
+    nspw: int = 4
     calmode: str = 'p'
 
 def selfcal_round_options(img_round: int) -> CasaSCOptions:
@@ -64,13 +64,29 @@ def derive_apply_selfcal(in_point: Pointing, img_round: int=0) -> Pointing:
     outfield = f"{in_point.field}_{caltable}"
     outms = f"{outfield}.{'.'.join(str(in_point.ms.name).split('.')[1:])}"
 
+    logger.info(f"Attempting to concatenate SPWs together")
+    in_ms_str = str(in_point.ms)
+    concat_ms_str = f"{in_ms_str}_concat"
+    
+    concat(
+        vis=[in_ms_str],
+        concatvis=concat_ms_str
+    )
+
     logger.info("Solutions applied. Regridding the MS and removing old DATA column. ")
     mstransform(
-        vis=str(in_point.ms),
+        vis=concat_ms_str,
         regridms=True,
         nspw=options.nspw,
+        mode='channel',
+        nchan=-1,
+        start=0,
+        width=1,
         outputvis=outms,
-        datacolumn='corrected'
+        chanbin=1,
+        createmms=False,
+        datacolumn='corrected',
+        combinespws=False
     )
     
     out_point = Pointing(

@@ -19,7 +19,7 @@ class WSCleanCMD(NamedTuple):
 
 class WSCleanOptions(NamedTuple):
     psfwindow: int = 65
-    size: int = 7500
+    size: int = 5000
     forcemask: float = 6
     maskthresh: float = 7.5
     autothresh: float = 0.5
