@@ -10,7 +10,7 @@ from glass_image import WSCLEANDOCKER
 from glass_image.wsclean import pull_wsclean_container, generate_wsclean_cmd, run_wsclean_cmd
 from glass_image.logging import logger 
 from glass_image.pointing import Pointing
-from glass_image.casa_selfcal import derive_apply_selfcal
+from glass_image.casa_selfcal import derive_apply_selfcal2
 
 def image_round(wsclean_img: Path, point: Pointing, img_round: int=0) -> None:
     
@@ -61,7 +61,7 @@ def image_cband(ms_path: Path, workdir: Optional[Path]=None, wsclean_img: Option
     
     for img_round in range(1, 5):
         logger.info(f"\n\nAttempting selcalibration for round {img_round}")
-        selfcal_point = derive_apply_selfcal(in_point=point, img_round=img_round)
+        selfcal_point = derive_apply_selfcal2(in_point=point, img_round=img_round)
         
         logger.info(f"\n\nRunning imaging for round {img_round}")
         image_round(wsclean_img=wsclean_img, point=selfcal_point, img_round=img_round)
