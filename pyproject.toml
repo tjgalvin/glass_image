@@ -23,6 +23,7 @@ mypy = "^1.0.1"
 
 [tool.poetry.scripts]
 glass_image = 'glass_image.glass_imager:cli'
+glass_vis2ms = 'glass_image.convert_vis:cli'
 
 [build-system]
 requires = ["poetry-core"]
