@@ -1,8 +1,16 @@
 """Utility functions to help with processing
 """
 import subprocess
+from pathlib import Path
 
 from glass_image.logging import logger
+
+def ensure_dir_exists(target_dir: Path) -> None:
+    if not target_dir.exists():
+        raise FileNotFoundError(f"Miriad file {target_dir} not found. ")
+
+    if not target_dir.is_dir():
+        raise ValueError(f"Although {target_dir} exists, it does not appear to be a miriad directory. ")
 
 
 def call(*args, **kwargs):

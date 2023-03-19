@@ -19,7 +19,7 @@ class CasaSCOptions(NamedTuple):
 def selfcal_round_options(img_round: int) -> CasaSCOptions:
     logger.debug(f"Getting options for self-calibration")
 
-    options = CasaSCOptions(nspw=1)
+    options = CasaSCOptions(nspw=4)
 
     if img_round == 1:
         options = CasaSCOptions(solint="60s", nspw=4)

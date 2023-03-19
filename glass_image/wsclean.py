@@ -37,7 +37,7 @@ def image_round_options(img_round: int) -> WSCleanOptions:
     if img_round == 3:
         options = WSCleanOptions(psfwindow=95, maskthresh=5.0)
     if img_round == 4:
-        options = WSCleanOptions(psfwindow=105, maskthresh=4.0)
+        options = WSCleanOptions(psfwindow=105, maskthresh=5.0)
     if img_round >= 4:
         options = WSCleanOptions(psfwindow=105, maskthresh=3.0)
 
@@ -94,7 +94,7 @@ def generate_wsclean_cmd(point: Pointing, img_round: int) -> WSCleanCMD:
     -pol I 
     -use-wgridder 
     -join-channels 
-    -channels-out 4 
+    -channels-out 16 
     -data-column DATA 
     {MS}"""
 

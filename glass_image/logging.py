@@ -6,6 +6,5 @@ import logging
 # Create logger
 logging.captureWarnings(True)
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.WARNING)
-
 logger.addHandler(logging.StreamHandler())
+logger.setLevel(logging.WARNING)
