@@ -1,7 +1,7 @@
 """Logging utilities for the glass_image operations
 """
 
-import logging 
+import logging
 
 # Create logger
 logging.captureWarnings(True)

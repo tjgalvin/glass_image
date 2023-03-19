@@ -36,8 +36,10 @@ def image_round_options(img_round: int) -> WSCleanOptions:
         options = WSCleanOptions(psfwindow=85, maskthresh=5.0)
     if img_round == 3:
         options = WSCleanOptions(psfwindow=95, maskthresh=5.0)
-    if img_round >= 4:
+    if img_round == 4:
         options = WSCleanOptions(psfwindow=105, maskthresh=4.0)
+    if img_round >= 4:
+        options = WSCleanOptions(psfwindow=105, maskthresh=3.0)
 
     logger.info(f"WSClean Options for round {img_round} are {options}")
     return options
@@ -60,7 +62,6 @@ def pull_wsclean_container() -> Path:
 
 
 def generate_wsclean_cmd(point: Pointing, img_round: int) -> WSCleanCMD:
-    
     # Get the options for this round of imaging
     woptions = image_round_options(img_round=img_round)
 

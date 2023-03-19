@@ -4,13 +4,16 @@ import subprocess
 
 from glass_image.logging import logger
 
+
 def call(*args, **kwargs):
     """Wrapper for subprocess.Popen to log the command and output
     All arguments are passed to subprocess.Popen
     """
     # Call a subprocess, print the command to stdout
     logger.info(" ".join(args[0]))
-    process = subprocess.Popen(*args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, **kwargs)
+    process = subprocess.Popen(
+        *args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, **kwargs
+    )
 
     with process.stdout:
         try:
@@ -19,6 +22,3 @@ def call(*args, **kwargs):
 
         except subprocess.CalledProcessError as e:
             logger.error(f"{str(e)}")
-
-
-
