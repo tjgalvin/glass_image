@@ -22,11 +22,16 @@ def selfcal_round_options(img_round: int) -> CasaSCOptions:
     options = CasaSCOptions(nspw=4)
 
     if img_round == 1:
-        options = CasaSCOptions(solint="60s", nspw=4)
-    if img_round in (2, 3):
         options = CasaSCOptions(solint="10s", nspw=4)
-    if img_round >= 4:
+    elif img_round == 2:
+        options = CasaSCOptions(solint="10s", nspw=4)
+    elif img_round == 3:
+        options = CasaSCOptions(solint="10s", nspw=4)
+    elif img_round == 4:
         options = CasaSCOptions(solint="10s", nspw=6)
+    elif img_round >= 5:
+        options = CasaSCOptions(solint="10s", calmode="ap", nspw=6)
+
 
     logger.info(f"Self-calibration options: {options}")
 
@@ -51,7 +56,7 @@ def derive_apply_selfcal(in_point: Pointing, img_round: int = 0) -> Pointing:
         outputvis=transform_ms_str,
         regridms=True,
         nspw=options.nspw,
-        mode="channel",
+        mode="channel_b",
         nchan=-1,
         start=0,
         width=1,
@@ -69,6 +74,7 @@ def derive_apply_selfcal(in_point: Pointing, img_round: int = 0) -> Pointing:
         caltable=caltable,
         solint=options.solint,
         calmode=options.calmode,
+        minsnr=0
     )
 
     logger.info(f"Solutions derived. Applying to data. ")
