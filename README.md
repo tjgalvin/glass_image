@@ -37,4 +37,4 @@ Both are made available as callable programs once the `glass_image` has been ins
 
 # Supported Versions
 
-This package relies on `casatools` and `casatasks`. At time of writing the `catatools` package supports up to `python3.8`. 
+This package relies on `casatools` and `casatasks`. At time of writing the `catatools` package supports up to `python==3.8`. 
