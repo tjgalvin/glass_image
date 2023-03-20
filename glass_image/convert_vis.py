@@ -1,17 +1,69 @@
 """Utilities to convert the miriad visibility data into a measurement set
 """
 import shutil
+import numpy as np
 import logging
 from pathlib import Path
 from argparse import ArgumentParser
 from typing import Optional
+from collections import Counter
 
 from casatasks import importuvfits
+from pyrap import tables
 
 from glass_image.logging import logger
 from glass_image.utils import ensure_dir_exists, call
 
+def remove_nonconformant_timesteps(target_ms: Path, baselines: int=15) -> None:
+    """Some ATCA measurement sets has a strange number of TIMESTEPS recorded, which
+    cause an error to be raised during the self-calibration loop in the mstransform
+    task. Remove there baselines. This function will remove the offending TIMESTEPS
+    and produce a new measurement set. All timesteps that do not have the prescribed
+    number of baselines are flaggede.  
 
+    Args:
+        target_ms (Path): The measurement set to scan and correct. 
+        baselines (int, optional): The required number of baselines to be present. Defaults to 15.
+    """
+    logger.info(f"Searching for non-conformant time steps in {target_ms}")
+
+    logger.info(f"Will ensure {baselines} aselines in each step")
+    logger.debug(f"Opening {target_ms}")
+    tab = tables.table(str(target_ms))
+    
+    counts = Counter(tab.getcol('TIME'))
+    mask = [counts[i] == 15 for i in tab.getcol('TIME')]
+    
+    total_timesteps = len(mask)
+    valid_timesteps = np.sum(mask)
+    
+    logger.info(f"{valid_timesteps} of {total_timesteps} had {baselines} baselines. ")
+    
+    if valid_timesteps == total_timesteps:
+        logger.info("All timesteps are valid. Returning without producing corrected MS. ")
+        
+        return
+    
+    # Create a temporary output for the valid MS, so that the open
+    # lock through the pyrap tables is not broken.
+    nonconform_ms = target_ms.with_suffix(target_ms.suffix + '_nonconform')    
+    temp_ms = target_ms.with_suffix(target_ms.suffix + '_temp')    
+    
+    idx = np.arange(np.array(mask).shape[0])[mask]
+    sub_tab = tab.selectrows(idx) 
+    
+    logger.info(f"Writing out {temp_ms}")
+    sub_tab.copy(str(temp_ms), deep=True)
+
+    tab.close()
+
+    logger.info(f"Renaming {target_ms} to {nonconform_ms}.")
+    target_ms.rename(nonconform_ms)
+    
+    logger.info(f"Renaming {temp_ms} to {target_ms}.")
+    temp_ms.rename(target_ms)
+
+    
 def extract_field_name(miriad_vis: Path) -> str:
     logger.info(f"Extracting field name from {miriad_vis}")
     name = miriad_vis.name.split(".")[0]
@@ -27,6 +79,7 @@ def convert_miriad_to_ms(
     clean_up: bool = True,
     field_out: bool = False,
     field_name: Optional[str] = None,
+    force_conformant_ms: bool = True
 ) -> Path:
     # will raise error when does not exist
     ensure_dir_exists(miriad_vis)
@@ -53,6 +106,9 @@ def convert_miriad_to_ms(
     ms_out = uvaver_out.with_suffix(miriad_vis.suffix + ".ms")
     logger.info(f"Converting to MS {ms_out}")
     importuvfits(fitsfile=str(uvfits_out), vis=str(ms_out))
+
+    if force_conformant_ms:
+        remove_nonconformant_timesteps(ms_out)        
 
     logger.info(f"Finished creating {ms_out}")
 
@@ -120,7 +176,6 @@ def cli() -> None:
 
     args = parser.parse_args()
 
-    logger.setLevel(logging.WARNING)
     if args.verbose:
         logger.setLevel(logging.DEBUG)
 
