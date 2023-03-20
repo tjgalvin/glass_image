@@ -16,6 +16,7 @@ aegeantools = "=2.2.0"
 spython = "^0.3.0"
 casatools = "^6.5.3.28"
 casatasks = "^6.5.3.28"
+python-casacore = "^3.5.2"
 
 [tool.poetry.group.dev.dependencies]
 black = "^23.1.0"
