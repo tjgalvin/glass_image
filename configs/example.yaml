@@ -15,12 +15,12 @@ default:
 
 sc: 
   1:
-  casasc:
-    nspw: 2
+    casasc:
+      nspw: 2
 
 
   2:
-  wsclean:
-    psfwidnow: 80
+    wsclean:
+      psfwidnow: 80
 
   
