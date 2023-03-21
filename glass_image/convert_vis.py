@@ -8,7 +8,7 @@ from argparse import ArgumentParser
 from typing import Optional
 from collections import Counter
 
-from casatasks import importuvfits
+from casatasks import importmiriad
 from pyrap import tables
 
 from glass_image.logging import logger
@@ -79,7 +79,7 @@ def convert_miriad_to_ms(
     clean_up: bool = True,
     field_out: bool = False,
     field_name: Optional[str] = None,
-    force_conformant_ms: bool = True
+    force_conformant_ms: bool = False
 ) -> Path:
     # will raise error when does not exist
     ensure_dir_exists(miriad_vis)
@@ -99,13 +99,9 @@ def convert_miriad_to_ms(
     uvaver_out = output_dir / miriad_vis.name
     call([f"uvaver", f"vis='{str(miriad_vis)}'", f"out='{str(uvaver_out)}'"])
 
-    uvfits_out = uvaver_out.with_suffix(uvaver_out.suffix + ".fits")
-    logger.info(f"Creating uvfits file {uvfits_out}")
-    call([f"fits", f"in='{str(uvaver_out)}'", f"out='{(uvfits_out)}'", 'op=uvout'])
-
     ms_out = uvaver_out.with_suffix(miriad_vis.suffix + ".ms")
     logger.info(f"Converting to MS {ms_out}")
-    importuvfits(fitsfile=str(uvfits_out), vis=str(ms_out))
+    importmiriad(mirfile=str(uvaver_out), vis=str(ms_out), tsys=True)
 
     if force_conformant_ms:
         remove_nonconformant_timesteps(ms_out)        
@@ -114,7 +110,7 @@ def convert_miriad_to_ms(
 
     if clean_up:
         logger.info(f"Cleaning up files")
-        files = [uvaver_out, uvfits_out]
+        files = [uvaver_out]
         for file in files:
             file = Path(file)
             if not file.exists(): 
