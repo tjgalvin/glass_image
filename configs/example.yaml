@@ -1,0 +1,26 @@
+glass:
+  scrounds: 10
+default:
+  casasc:
+   solint: "40s"
+   nspw: 4
+   calmode: "p"
+  wsclean:
+   psfwindow: 65
+   size: 5000
+   forcemask: 10
+   maskthresh: 5
+   autothresh: 0.5
+   channels_out: 8
+
+sc: 
+  1:
+  casasc:
+    nspw: 2
+
+
+  2:
+  wsclean:
+    psfwidnow: 80
+
+  
