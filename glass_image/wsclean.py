@@ -136,9 +136,10 @@ def run_wsclean_cmd(
     # Cleanup to save space
     if clean_up:
         work_dir = Path(os.getcwd())
-        for file in work_dir.glob(f"{wsclean_cmd.outname}*{{dirty,psf}}.fits"):
-            logger.info(f"Deleting {file}.")
-            file.unlink()
+        for file_type in ["psf", "dirty"]:
+            for file in work_dir.glob(f"{wsclean_cmd.outname}*{file_type}.fits"):
+                logger.info(f"Deleting {file}.")
+                file.unlink()
 
     if move_into is not None:
         move_wsclean_out_into(move_into, wsclean_cmd.outname)
