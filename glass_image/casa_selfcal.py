@@ -14,38 +14,14 @@ class CasaSCOptions(NamedTuple):
     solint: str = "60s"
     nspw: int = 4
     calmode: str = "p"
+    round: int = 0
 
 
-def selfcal_round_options(img_round: int) -> CasaSCOptions:
-    logger.debug(f"Getting options for self-calibration")
-
-    options = CasaSCOptions(nspw=4)
-
-    if img_round == 1:
-        options = CasaSCOptions(solint="10s", nspw=4)
-    elif img_round == 2:
-        options = CasaSCOptions(solint="10s", nspw=4)
-    elif img_round == 3:
-        options = CasaSCOptions(solint="10s", nspw=4)
-    elif img_round == 4:
-        options = CasaSCOptions(solint="10s", nspw=4)
-    elif img_round >= 5:
-        # options = CasaSCOptions(solint="10s", calmode="ap", nspw=6)
-        options = CasaSCOptions(solint="10s", calmode="ap", nspw=4)
-
-
-    logger.info(f"Self-calibration options: {options}")
-
-    return options
-
-
-def derive_apply_selfcal(in_point: Pointing, img_round: int = 0, options: Optional[CasaSCOptions] = None) -> Pointing:
+def derive_apply_selfcal(in_point: Pointing, options: CasaSCOptions) -> Pointing:
     
     logger.info(f"Will apply self-calibration to {in_point.ms}")
 
-    options = options if options is not None else selfcal_round_options(img_round=img_round)
-
-    caltable = f"pcal{img_round}"
+    caltable = f"pcal{options.round}"
     logger.info(f"Will create solution table: {caltable}")
 
     outfield = f"{in_point.field}_{caltable}"

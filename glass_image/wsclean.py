@@ -24,26 +24,7 @@ class WSCleanOptions(NamedTuple):
     maskthresh: float = 5
     autothresh: float = 0.5
     channels_out: int = 8
-
-
-def image_round_options(img_round: int) -> WSCleanOptions:
-    logger.debug(f"Obtainer wsclean image options")
-
-    options = WSCleanOptions(psfwindow=150, maskthresh=6.5)
-
-    if img_round == 1:
-        options = WSCleanOptions(psfwindow=50, maskthresh=6.0)
-    elif img_round == 2:
-        options = WSCleanOptions(psfwindow=50, maskthresh=6.0)
-    elif img_round == 3:
-        options = WSCleanOptions(psfwindow=75, maskthresh=5.0)
-    elif img_round == 4:
-        options = WSCleanOptions(psfwindow=75, maskthresh=4.0)
-    elif img_round > 4:
-        options = WSCleanOptions(psfwindow=85, maskthresh=4.0)
-
-    logger.info(f"WSClean Options for round {img_round} are {options}")
-    return options
+    round: int = 0
 
 
 def pull_wsclean_container() -> Path:
@@ -64,49 +45,39 @@ def pull_wsclean_container() -> Path:
 
 def generate_wsclean_cmd(
     point: Pointing,
-    img_round: Optional[int] = None,
-    options: Optional[WSCleanOptions] = None,
+    options: WSCleanOptions,
 ) -> WSCleanCMD:
-    # Get the options for this round of imaging
-    if isinstance(options, WSCleanOptions):
-        woptions = options
-    elif isinstance(img_round, int):
-        woptions = image_round_options(img_round=img_round)
-    else:
-        raise ValueError(
-            f"Both img_round and options have invalid tyoes or are both unset. "
-        )
-
+    
     MS = f"{point.ms}"
 
     outname = (
         f"{point.field}_"
-        f"fm{woptions.forcemask}_"
-        f"psfw{woptions.psfwindow}_"
-        f"mt{woptions.maskthresh}_"
-        f"at{woptions.autothresh}_"
-        f"round{img_round}"
+        f"fm{options.forcemask}_"
+        f"psfw{options.psfwindow}_"
+        f"mt{options.maskthresh}_"
+        f"at{options.autothresh}_"
+        f"round{options.round}"
     )
     logger.debug(f"{outname=}")
 
     cmd = f"""wsclean 
     -abs-mem 100 
     -mgain 0.70 
-    -force-mask-rounds {woptions.forcemask} 
+    -force-mask-rounds {options.forcemask} 
     -nmiter 15 
     -niter 500000 
     -local-rms 
-    -auto-mask {woptions.maskthresh} 
-    -local-rms-window {woptions.psfwindow} 
-    -auto-threshold {woptions.autothresh} 
+    -auto-mask {options.maskthresh} 
+    -local-rms-window {options.psfwindow} 
+    -auto-threshold {options.autothresh} 
     -name {outname} 
-    -size {woptions.size} {woptions.size} 
+    -size {options.size} {options.size} 
     -scale 0.3asec 
     -weight briggs 0.5 
     -pol I 
     -use-wgridder 
     -join-channels 
-    -channels-out {woptions.channels_out} 
+    -channels-out {options.channels_out} 
     -multiscale
     -fit-spectral-pol 3
     -data-column DATA 

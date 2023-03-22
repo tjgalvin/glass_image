@@ -26,15 +26,15 @@ class ImagerOptions(NamedTuple):
 def image_round(
     wsclean_img: Path,
     point: Pointing,
+    wsclean_options: WSCleanOptions,
     img_round: int = 0,
-    wsclean_options: Optional[WSCleanOptions] = None,
     clean_up: bool = True,
 ) -> None:
     logger.info(f"Will be imaging {point}")
     logger.info(f"Using container: {wsclean_img=}")
 
     wsclean_cmd = generate_wsclean_cmd(
-        point=point, img_round=img_round, options=wsclean_options
+        point=point, options=wsclean_options
     )
 
     output_dir = Path(f"round_{img_round}") if img_round > 0 else Path("no_selfcal")
@@ -50,9 +50,9 @@ def image_round(
 
 def image_cband(
     ms_path: Path,
+    imager_config: Path,
     workdir: Optional[Path] = None,
     wsclean_img: Optional[Path] = None,
-    imager_config: Optional[Path] = None,
     clean_up: bool = True,
 ) -> None:
     assert ms_path.exists(), f"MS {ms_path} does not exist"
@@ -78,36 +78,28 @@ def image_cband(
     logger.info(f"WSClean image: {wsclean_img}")
 
     logger.debug(f"Getting Imager related options.")
-    if isinstance(imager_config, Path):
-        imager_options = ImagerOptions(**get_imager_options(imager_config))
-    else:
-        imager_options = ImagerOptions()
+    imager_options = ImagerOptions(**get_imager_options(imager_config))
     
 
-    img_round_options = ImageRoundOptions()
-    if isinstance(imager_config, Path):
-        img_round_options = get_round_options(imager_config, img_round=0)
+    img_round_options = get_round_options(imager_config, img_round=0)
 
     image_round(
         wsclean_img=wsclean_img, point=point, wsclean_options=img_round_options.wsclean
     )
 
     for img_round in range(1, imager_options.rounds):
-        img_round_options = ImageRoundOptions()
-        if isinstance(imager_config, Path):
-            logger.info(f"Getting options from {imager_config} in {img_round}")
-            img_round_options = get_round_options(imager_config, img_round=img_round)
+        img_round_options = get_round_options(imager_config, img_round=img_round)
         
         logger.info(f"\n\nAttempting selcalibration for round {img_round}")
         selfcal_point = derive_apply_selfcal(
-            in_point=point, img_round=img_round, options=img_round_options.casasc
+            in_point=point, 
+            options=img_round_options.casasc
         )
 
         logger.info(f"\n\nRunning imaging for round {img_round}")
         image_round(
             wsclean_img=wsclean_img,
             point=selfcal_point,
-            img_round=img_round,
             wsclean_options=img_round_options.wsclean,
             clean_up=clean_up,
         )
@@ -137,8 +129,7 @@ def get_parser() -> ArgumentParser:
         help=f"Path to the wsclean singularity container. If not provided will attempt to download {WSCLEANDOCKER}, a slightly modified wsclean image. ",
     )
     parser.add_argument(
-        "-i",
-        "--imager-config",
+        "imager_config",
         type=Path,
         default=None,
         help="A glass_image style yaml configuration file to adjust options and self-cal settings. This is intended to hold strictly configurables related to imaging and self-calibration, not configurables about the main program (e.g. work directory)",
@@ -159,7 +150,7 @@ def cli() -> None:
         ms_path=args.ms,
         workdir=args.workdir,
         wsclean_img=args.wsclean_image,
-        imager_config=args.imager_config,
+        imager_config=args.imager_config.absolute(),
     )
 
 

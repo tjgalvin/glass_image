@@ -14,8 +14,8 @@ from glass_image.errors import ImagerConfigurationError
 OPTIONTYPES = ('casasc', 'wsclean')
 
 class ImageRoundOptions(NamedTuple):
-    wsclean: Optional[WSCleanOptions] = None
-    casasc: Optional[CasaSCOptions] = None
+    wsclean: WSCleanOptions
+    casasc: CasaSCOptions
 
 def load_yaml_configuration(yaml_config: Path) -> Dict[Any, Any]:
     logger.info(f"Loading configuration file {str(yaml_config)}")
@@ -54,8 +54,8 @@ def get_round_options(yaml_config: Path, img_round: int) -> ImageRoundOptions:
     
     if img_round == 0:
         return ImageRoundOptions(
-            wsclean = WSCleanOptions(**config['default']['wsclean']), 
-            casasc = None
+            wsclean = WSCleanOptions(round=0, **config['default']['wsclean']), 
+            casasc = CasaSCOptions(round=0)
         )
     
     logger.debug("Loading the defaults")
@@ -79,8 +79,8 @@ def get_round_options(yaml_config: Path, img_round: int) -> ImageRoundOptions:
             raise ImagerConfigurationError(f"Neither 'casasc' now 'wsclean' options for {img_round=} found in {str(yaml_config)}")
     
     return ImageRoundOptions(
-        wsclean=WSCleanOptions(**wsclean_config_args), 
-        casasc=CasaSCOptions(**casa_config_args)         
+        wsclean=WSCleanOptions(round=img_round, **wsclean_config_args), 
+        casasc=CasaSCOptions(round=img_round, **casa_config_args)         
     )
         
         
