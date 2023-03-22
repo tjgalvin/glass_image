@@ -1,5 +1,5 @@
 glass:
-  scrounds: 10
+  rounds: 10
 default:
   casasc:
    solint: "40s"
