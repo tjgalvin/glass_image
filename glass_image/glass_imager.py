@@ -32,7 +32,10 @@ def image_round(wsclean_img: Path, point: Pointing, img_round: int = 0) -> None:
 
 
 def image_cband(
-    ms_path: Path, workdir: Optional[Path] = None, wsclean_img: Optional[Path] = None
+    ms_path: Path,
+    workdir: Optional[Path] = None,
+    wsclean_img: Optional[Path] = None,
+    yaml_config: Optional[Path] = None,
 ) -> None:
     assert ms_path.exists(), f"MS {ms_path} does not exist"
 
@@ -88,6 +91,13 @@ def get_parser() -> ArgumentParser:
         type=Path,
         default=None,
         help=f"Path to the wsclean singularity container. If not provided will attempt to download {WSCLEANDOCKER}, a slightly modified wsclean image. ",
+    )
+    parser.add_argument(
+        "-y",
+        "--yaml-imager-config",
+        type=Path,
+        default=None,
+        help="A glass_image style yaml configuration file to adjust options and self-cal settings. ",
     )
 
     return parser

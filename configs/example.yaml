@@ -7,7 +7,7 @@ default:
    calmode: "p"
   wsclean:
    psfwindow: 65
-   size: 5000
+   size: 6000
    forcemask: 10
    maskthresh: 5
    autothresh: 0.5

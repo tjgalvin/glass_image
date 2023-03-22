@@ -19,8 +19,8 @@ class WSCleanCMD(NamedTuple):
 
 class WSCleanOptions(NamedTuple):
     psfwindow: int = 65
-    size: int = 5000
-    forcemask: float = 6
+    size: int = 7000
+    forcemask: float = 10
     maskthresh: float = 5
     autothresh: float = 0.5
     channels_out: int = 8
@@ -30,20 +30,24 @@ def image_round_options(img_round: int) -> WSCleanOptions:
     logger.debug(f"Obtainer wsclean image options")
 
     options = WSCleanOptions(
-        psfwindow=105,
-        maskthresh=4.5
+        psfwindow=150,
+        maskthresh=6.5
     )
 
     if img_round == 1:
-        options = WSCleanOptions(psfwindow=75, maskthresh=6.0)
+        # options = WSCleanOptions(psfwindow=75, maskthresh=6.0)
+        options = WSCleanOptions(psfwindow=50, maskthresh=6.0)
     elif img_round == 2:
-        options = WSCleanOptions(psfwindow=75, maskthresh=5.0)
+        # options = WSCleanOptions(psfwindow=75, maskthresh=6.0)
+        options = WSCleanOptions(psfwindow=50, maskthresh=6.0)
     elif img_round == 3:
-        options = WSCleanOptions(psfwindow=105, maskthresh=4.0)
+        # options = WSCleanOptions(psfwindow=105, maskthresh=4.0)
+        options = WSCleanOptions(psfwindow=75, maskthresh=5.0)
     elif img_round == 4:
-        options = WSCleanOptions(psfwindow=105, maskthresh=4.0)
+        options = WSCleanOptions(psfwindow=75, maskthresh=4.0)
     elif img_round > 4:
-        options = WSCleanOptions(psfwindow=105, maskthresh=3.0)
+        # options = WSCleanOptions(psfwindow=110, maskthresh=3.0)
+        options = WSCleanOptions(psfwindow=85, maskthresh=4.0)
 
     logger.info(f"WSClean Options for round {img_round} are {options}")
     return options
@@ -99,6 +103,8 @@ def generate_wsclean_cmd(point: Pointing, img_round: int) -> WSCleanCMD:
     -use-wgridder 
     -join-channels 
     -channels-out {woptions.channels_out} 
+    -multiscale
+    -fit-spectral-pol 3
     -data-column DATA 
     {MS}"""
 

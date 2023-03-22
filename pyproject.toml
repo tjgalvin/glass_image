@@ -17,6 +17,7 @@ spython = "^0.3.0"
 casatools = "^6.5.3.28"
 casatasks = "^6.5.3.28"
 python-casacore = "^3.5.2"
+pyyaml = "^6.0"
 
 [tool.poetry.group.dev.dependencies]
 black = "^23.1.0"

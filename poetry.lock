@@ -781,45 +781,56 @@ test = ["appdirs (==1.4.4)", "covdefaults (>=2.2.2)", "pytest (>=7.2.1)", "pytes
 
 [[package]]
 name = "pyerfa"
-version = "2.0.0.1"
+version = "2.0.0.2"
 description = "Python bindings for ERFA"
 category = "main"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "pyerfa-2.0.0.1-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:278832de7803f2fb0ef4b14263200f98dfdb3eaa78dc63835d93796fd8fc42c6"},
-    {file = "pyerfa-2.0.0.1-cp310-cp310-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:629248cebc8626a52e80f69d4e2f30cc6e751f57803f5ba7ec99edd09785d181"},
-    {file = "pyerfa-2.0.0.1-cp310-cp310-manylinux_2_5_i686.manylinux1_i686.manylinux_2_12_i686.manylinux2010_i686.whl", hash = "sha256:3285d95dfe398a931a633da961f6f1c0b8690f2a3b1c510a4efe639f784cd9c7"},
-    {file = "pyerfa-2.0.0.1-cp310-cp310-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_12_x86_64.manylinux2010_x86_64.whl", hash = "sha256:177f50f0e8354f1a7115c2d4784668b365f1cc2f2c7d1e2f4ddf354160559b32"},
-    {file = "pyerfa-2.0.0.1-cp310-cp310-musllinux_1_1_x86_64.whl", hash = "sha256:041939a7554a98b72885904ffddd8882567191bee62358727679448480174c31"},
-    {file = "pyerfa-2.0.0.1-cp310-cp310-win32.whl", hash = "sha256:f9e149bc3d423ae891f6587c1383fd471ae07744b88152e66b5e9f64a8bc9006"},
-    {file = "pyerfa-2.0.0.1-cp310-cp310-win_amd64.whl", hash = "sha256:f00dc4fc48a16eb39fd0121f2f06c03ee762b79a207cc5b0bc17d94191b51302"},
-    {file = "pyerfa-2.0.0.1-cp37-cp37m-macosx_10_9_x86_64.whl", hash = "sha256:1ba3668e1e181a678ce788d23a4f8666aabd8518f77fdde5157ba4744bc73d4a"},
-    {file = "pyerfa-2.0.0.1-cp37-cp37m-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:b8f08f6e6d75a261bb92b707bea19eba2e46a8fcbfb499b789f3eb0d0352ea00"},
-    {file = "pyerfa-2.0.0.1-cp37-cp37m-manylinux_2_5_i686.manylinux1_i686.manylinux_2_12_i686.manylinux2010_i686.whl", hash = "sha256:da89304d6b25ac056e470f44f85770b04c9674eced07a7f93b5eb0ce1edaabd9"},
-    {file = "pyerfa-2.0.0.1-cp37-cp37m-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_12_x86_64.manylinux2010_x86_64.whl", hash = "sha256:36738ba75e7a69e0ea6a7e96a5d33a852816427e7e94e7089c188ef920b02669"},
-    {file = "pyerfa-2.0.0.1-cp37-cp37m-musllinux_1_1_x86_64.whl", hash = "sha256:5c077aed4ccd585c1fe2f96ada8edb66e9d27b4ae8ff13ea2783283b298ba0c6"},
-    {file = "pyerfa-2.0.0.1-cp37-cp37m-win32.whl", hash = "sha256:0833f8ebba9f84a19a04ee5ca5aa90be75729abfbb8328e7a6d89ed1b04e058c"},
-    {file = "pyerfa-2.0.0.1-cp37-cp37m-win_amd64.whl", hash = "sha256:e86c08c9c0b75e448818473c6d709e3887a439c05a1aa34042d26774251422b7"},
-    {file = "pyerfa-2.0.0.1-cp38-cp38-macosx_10_9_x86_64.whl", hash = "sha256:b935fa9d10dfd7206760859236640c835aa652609c0ae8a6584593324eb6f318"},
-    {file = "pyerfa-2.0.0.1-cp38-cp38-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:67711a748821c5d91f7a8907b9125094dfc3e5ab6a6b7ad8e207fd6afbe6b37f"},
-    {file = "pyerfa-2.0.0.1-cp38-cp38-manylinux_2_5_i686.manylinux1_i686.manylinux_2_12_i686.manylinux2010_i686.whl", hash = "sha256:d2c10838241aaf17279468dcc731cb2c09bfb7dd7b340c0f527fd70c7c9e53d1"},
-    {file = "pyerfa-2.0.0.1-cp38-cp38-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_12_x86_64.manylinux2010_x86_64.whl", hash = "sha256:37249e1e2b378d1f56e9379e4bb8f2cf87645c160a8a3e92166a1b7bb7ad7ea6"},
-    {file = "pyerfa-2.0.0.1-cp38-cp38-musllinux_1_1_x86_64.whl", hash = "sha256:f76fb4b64a87da2af9d0b6b79cc25e1ecc5b4143b2b3c8c9f10b221748c5db4d"},
-    {file = "pyerfa-2.0.0.1-cp38-cp38-win32.whl", hash = "sha256:486e672c52bf58eab61140968660ac7fb3b756116b53c26c334ae95dadd943ee"},
-    {file = "pyerfa-2.0.0.1-cp38-cp38-win_amd64.whl", hash = "sha256:d603f1e8123f98a0593433aa6dad4ba03f0b0ceef4cb3e96f9a69aa7ab8d5c61"},
-    {file = "pyerfa-2.0.0.1-cp39-cp39-macosx_10_9_x86_64.whl", hash = "sha256:ef5590b2075c50395b958f102988e519e339d96509dfdca0360f26dde94c47e7"},
-    {file = "pyerfa-2.0.0.1-cp39-cp39-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:c7ca8c98842f1ae10c1fbcea0e03a41ddc13456da88da2dc9b8335a8c414d7a3"},
-    {file = "pyerfa-2.0.0.1-cp39-cp39-manylinux_2_5_i686.manylinux1_i686.manylinux_2_12_i686.manylinux2010_i686.whl", hash = "sha256:d3e7dedce1d7e4e044f6f81d192b1f6b373c8ad6716aa8721ec6d3cf4d36f5f3"},
-    {file = "pyerfa-2.0.0.1-cp39-cp39-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_12_x86_64.manylinux2010_x86_64.whl", hash = "sha256:690116a6026ee84ce5fec794c9e21bdc8c0ac8345d6722323810181486745068"},
-    {file = "pyerfa-2.0.0.1-cp39-cp39-musllinux_1_1_x86_64.whl", hash = "sha256:da5ee24eaf5e5f841f36885ea16461800b7bea11df5b657bcff85d7a7f51d2d8"},
-    {file = "pyerfa-2.0.0.1-cp39-cp39-win32.whl", hash = "sha256:7895b7e6f3bc36442d1969bf3bda5a4c3b661be7a5a468798369cbd5d81023d8"},
-    {file = "pyerfa-2.0.0.1-cp39-cp39-win_amd64.whl", hash = "sha256:63a83c35cea8c5d50d53c18089f1e625c0ffc59a7a5b8d44e0f1b3ec5288f183"},
-    {file = "pyerfa-2.0.0.1.tar.gz", hash = "sha256:2fd4637ffe2c1e6ede7482c13f583ba7c73119d78bef90175448ce506a0ede30"},
+    {file = "pyerfa-2.0.0.2-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:f6db8848c8d368b55f0e2f8a74c9bb4293dbfe947b7fa4f6220169f2ae502a44"},
+    {file = "pyerfa-2.0.0.2-cp310-cp310-macosx_11_0_arm64.whl", hash = "sha256:c3e3058150bc6cdbf02adf2c266000431a7a42e6e98f05d0c98d5d4ff500506f"},
+    {file = "pyerfa-2.0.0.2-cp310-cp310-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:85816ddd41e30f922ab00cb519ba39218b904698f8590750a1b69f21b106e2c5"},
+    {file = "pyerfa-2.0.0.2-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:704b13d9f59e93705ec625a965263b4ddd70222988f20be3d6f9e556dedcbb0e"},
+    {file = "pyerfa-2.0.0.2-cp310-cp310-manylinux_2_5_i686.manylinux1_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:2611c8ccc5eb817c309b1629b8430f5f4d029913a531955ef7be6a9ebf2db35d"},
+    {file = "pyerfa-2.0.0.2-cp310-cp310-musllinux_1_1_x86_64.whl", hash = "sha256:d678218d2fdd53d579be471f217b3b9ac5133f302c05760b744cfa797b42eb7c"},
+    {file = "pyerfa-2.0.0.2-cp310-cp310-win32.whl", hash = "sha256:975a040e698c07e332a92f3fbb5b1ba45d5c01435f92b7a2e41e2998af70cbfd"},
+    {file = "pyerfa-2.0.0.2-cp310-cp310-win_amd64.whl", hash = "sha256:bebab4c389c674e48dd87963323c9bf36a75af1e8192ab4699fdfcfb52b3a5e8"},
+    {file = "pyerfa-2.0.0.2-cp311-cp311-macosx_10_9_x86_64.whl", hash = "sha256:31870b2b15cc49bd1216e8c12add22b5f8264f7e1a896d9d42ed0d2f6d8f140c"},
+    {file = "pyerfa-2.0.0.2-cp311-cp311-macosx_11_0_arm64.whl", hash = "sha256:31bd6e736b76aa99589b1d1d8b479e50a3ae980f046d7f06e93146159b4a8325"},
+    {file = "pyerfa-2.0.0.2-cp311-cp311-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:d647650e50d478386906723523ee1094255c4e8f38a4f269fced3f03d575903f"},
+    {file = "pyerfa-2.0.0.2-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:f6974df2305a95d63d6fa53b0f4ed31a161b6888178dd8ecf2fed147b0c0f296"},
+    {file = "pyerfa-2.0.0.2-cp311-cp311-manylinux_2_5_i686.manylinux1_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:1d4c7be0627bf2d4d6f66c2ab07bd833c9523d86369321b5edad1e6fac47681b"},
+    {file = "pyerfa-2.0.0.2-cp311-cp311-musllinux_1_1_x86_64.whl", hash = "sha256:014814fb5c8dcaf31328087fd9f86fe72c150d9ffb505f2f274316c0bf91caba"},
+    {file = "pyerfa-2.0.0.2-cp311-cp311-win32.whl", hash = "sha256:58a104acc67e31769d652b31284813dbf4bfbac1155e5ce0669a5465e6ecea28"},
+    {file = "pyerfa-2.0.0.2-cp311-cp311-win_amd64.whl", hash = "sha256:d44ddafbb784b872bca8dc4ceb357293c99034b7f134d9aef8c4287d181d4c4e"},
+    {file = "pyerfa-2.0.0.2-cp37-cp37m-macosx_10_9_x86_64.whl", hash = "sha256:b819830ede814db892e463b51492bfdd83a08a7b2953211aa58599865f7c119d"},
+    {file = "pyerfa-2.0.0.2-cp37-cp37m-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:35e747c6bf3894ac31075d4fab9865dc1f8d10de6af9ad831effe31ac17f943c"},
+    {file = "pyerfa-2.0.0.2-cp37-cp37m-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:e5d1aba7dbaad83b9b7bc19c9396f4ebbe7c52fe31bc840a171e0e2887bcd074"},
+    {file = "pyerfa-2.0.0.2-cp37-cp37m-manylinux_2_5_i686.manylinux1_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:03535d39a7982731538a41a10d7943eaf452999825700b99abb5a5f8ec88eae6"},
+    {file = "pyerfa-2.0.0.2-cp37-cp37m-musllinux_1_1_x86_64.whl", hash = "sha256:6d3b93389657fe133c09dba6d6715d3d79dda637fa3c5a99c77cd262fd923af5"},
+    {file = "pyerfa-2.0.0.2-cp37-cp37m-win32.whl", hash = "sha256:53faeb44a9e7d8dbb95e07e23dfea3fc9dd2f9b8f9843eb8daa60b9a6234a50d"},
+    {file = "pyerfa-2.0.0.2-cp37-cp37m-win_amd64.whl", hash = "sha256:97b745c3186a7380a8869b1305410d2b980cd5393f4d94f25b59c0278a54ed83"},
+    {file = "pyerfa-2.0.0.2-cp38-cp38-macosx_10_9_x86_64.whl", hash = "sha256:c43673614b881d1fc5f1f7b287dcfc694461c221bbb653dd9037cc1a0c0845f6"},
+    {file = "pyerfa-2.0.0.2-cp38-cp38-macosx_11_0_arm64.whl", hash = "sha256:acaa0d00de9f3d4f9a5a11f3b1b89e2aa970422616882c53b01fc348a51001cd"},
+    {file = "pyerfa-2.0.0.2-cp38-cp38-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:cf9bad7409e44b1d6728f4733d73596a48c8f848a7ffb1647ec7fc62c1e81c23"},
+    {file = "pyerfa-2.0.0.2-cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:bc37154338ccb19a17951e06cbdd333fb0378a3107c649f7ccb5bfcf71224c3d"},
+    {file = "pyerfa-2.0.0.2-cp38-cp38-manylinux_2_5_i686.manylinux1_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:28f7b60aa8924a84402cb35150a2922bc0178b00c6e98e1d1bcb9d4e8d415a96"},
+    {file = "pyerfa-2.0.0.2-cp38-cp38-musllinux_1_1_x86_64.whl", hash = "sha256:0f76a89f382d57caae4703194a8ca7f8d99e0d8ee5cc3ab7889725b02f525c36"},
+    {file = "pyerfa-2.0.0.2-cp38-cp38-win32.whl", hash = "sha256:ee7bf379d76f02a9c42f885a417d1fa3eb2fb743e5b686deeaf9c1fc69ca3b5e"},
+    {file = "pyerfa-2.0.0.2-cp38-cp38-win_amd64.whl", hash = "sha256:fdbc0ad5c0dcb2e425332bf82ab928e9c2e441d2ca9a205972ee5fe1ffd9c5b5"},
+    {file = "pyerfa-2.0.0.2-cp39-cp39-macosx_10_9_x86_64.whl", hash = "sha256:5b272699c60919f38a97b46fb2ff622f94c36cd7aecb6f6210504e76206e6545"},
+    {file = "pyerfa-2.0.0.2-cp39-cp39-macosx_11_0_arm64.whl", hash = "sha256:ad3a3fb98b51bb63a63ddafba83fbb4ee791c2122a7cdaa592faa282838c60c9"},
+    {file = "pyerfa-2.0.0.2-cp39-cp39-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:0fcac90692f92d501658743a2d58aebf0d845e68af610d74774eebc1916c3cb5"},
+    {file = "pyerfa-2.0.0.2-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:0a9d4f423982c43ed7f25e4e625013c82e1b66e133a438b0a41f46be01938304"},
+    {file = "pyerfa-2.0.0.2-cp39-cp39-manylinux_2_5_i686.manylinux1_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:01e56d53cbf4bb77f487c285c1177c5b69f36b5f5abcc40d4fce86208cca1a93"},
+    {file = "pyerfa-2.0.0.2-cp39-cp39-musllinux_1_1_x86_64.whl", hash = "sha256:efd66c138c7299260215674b42f4969cd34bfee1b4ceaa37b33f2a9d80015e18"},
+    {file = "pyerfa-2.0.0.2-cp39-cp39-win32.whl", hash = "sha256:d5b528dc22e42df7738bd0d3216eabf845b39121e3eca8059d43e132dfcaec88"},
+    {file = "pyerfa-2.0.0.2-cp39-cp39-win_amd64.whl", hash = "sha256:d0001f25f72819c28d6f495624be0fdae66299d658609a40a1765d8a03e6d2a3"},
+    {file = "pyerfa-2.0.0.2.tar.gz", hash = "sha256:05370b7f0b4ca5a0caa845a1b6047259ba14d5608d1a18cd180049fff8c74b12"},
 ]
 
 [package.dependencies]
-numpy = ">=1.17"
+numpy = ">=1.21"
 
 [package.extras]
 docs = ["sphinx-astropy (>=1.3)"]
@@ -1052,4 +1063,4 @@ testing = ["big-O", "flake8 (<5)", "jaraco.functools", "jaraco.itertools", "more
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.8,<3.9"
-content-hash = "3b8c217d3f0017cb67d89dd53550a1300a47a57acf59823dc724ed1c83091494"
+content-hash = "ba7394bcaba04f458ac8ecb5050d5a2ef2a7d01da16a59504a3f8e67c55c4bcf"
