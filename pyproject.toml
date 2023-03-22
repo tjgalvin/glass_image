@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "glass-image"
-version = "0.1.0"
+version = "0.1.1"
 description = "Quick and dirty script to image with glass"
 authors = ["tgalvin <tim.galvin@csiro.au>"]
 readme = "README.md"
