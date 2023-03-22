@@ -41,6 +41,9 @@ def verify_configuration(yaml_config: Path):
 def get_imager_options(yaml_config: Path) -> Dict[Any, Any]:
     config = load_yaml_configuration(yaml_config)
     
+    if 'glass' not in config.keys():
+        raise ImagerConfigurationError(f"Imager configuration file missing 'glass' entry. ")
+
     return config['glass']
 
 def get_round_options(yaml_config: Path, img_round: int) -> Options:

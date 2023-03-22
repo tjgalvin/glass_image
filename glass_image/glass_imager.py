@@ -4,24 +4,37 @@ import os
 import logging
 from argparse import ArgumentParser
 from pathlib import Path
-from typing import Optional
+from typing import Optional, NamedTuple
 
 from glass_image import WSCLEANDOCKER
 from glass_image.wsclean import (
     pull_wsclean_container,
     generate_wsclean_cmd,
     run_wsclean_cmd,
+    WSCleanOptions,
 )
 from glass_image.logging import logger
 from glass_image.pointing import Pointing
-from glass_image.casa_selfcal import derive_apply_selfcal
+from glass_image.casa_selfcal import derive_apply_selfcal, CasaSCOptions
+from glass_image.configuration import get_imager_options, get_round_options
 
 
-def image_round(wsclean_img: Path, point: Pointing, img_round: int = 0) -> None:
+class ImagerOptions(NamedTuple):
+    rounds: int = 5
+
+
+def image_round(
+    wsclean_img: Path,
+    point: Pointing,
+    img_round: int = 0,
+    wsclean_options: Optional[WSCleanOptions] = None,
+) -> None:
     logger.info(f"Will be imaging {point}")
     logger.info(f"Using container: {wsclean_img=}")
 
-    wsclean_cmd = generate_wsclean_cmd(point=point, img_round=img_round)
+    wsclean_cmd = generate_wsclean_cmd(
+        point=point, img_round=img_round, options=wsclean_options
+    )
 
     output_dir = Path(f"round_{img_round}") if img_round > 0 else Path("no_selfcal")
     assert not output_dir.exists(), f"Output folder {output_dir} already exists. "
@@ -35,7 +48,7 @@ def image_cband(
     ms_path: Path,
     workdir: Optional[Path] = None,
     wsclean_img: Optional[Path] = None,
-    yaml_config: Optional[Path] = None,
+    imager_config: Optional[Path] = None,
 ) -> None:
     assert ms_path.exists(), f"MS {ms_path} does not exist"
 
@@ -59,14 +72,36 @@ def image_cband(
     logger.info(f"Formed point: {point}")
     logger.info(f"WSClean image: {wsclean_img}")
 
+    logger.ddebug(f"Getting Imager related options.")
+    imager_options = (
+        ImagerOptions(**get_imager_options(imager_config))
+        if imager_options is not None
+        else ImagerOptions()
+    )
+
+    wsclean_options, _ = get_round_options(imager_config, img_round=0)
     image_round(wsclean_img=wsclean_img, point=point)
 
-    for img_round in range(1, 6):
+    for img_round in range(1, imager_options["rounds"]):
+        wsclean_options = casasc_options = None
+        if imager_config is not None:
+            logger.info(f"Getting options from {imager_options} in {img_round}")
+            wsclean_options, casasc_options = get_round_options(
+                imager_options, img_round=img_round
+            )
+
         logger.info(f"\n\nAttempting selcalibration for round {img_round}")
-        selfcal_point = derive_apply_selfcal(in_point=point, img_round=img_round)
+        selfcal_point = derive_apply_selfcal(
+            in_point=point, img_round=img_round, options=casasc_options
+        )
 
         logger.info(f"\n\nRunning imaging for round {img_round}")
-        image_round(wsclean_img=wsclean_img, point=selfcal_point, img_round=img_round)
+        image_round(
+            wsclean_img=wsclean_img,
+            point=selfcal_point,
+            img_round=img_round,
+            wsclean_options=wsclean_options,
+        )
 
         logger.info(f"\n\nUpdating current MS from {point.ms} to {selfcal_point.ms}")
         point = selfcal_point
@@ -93,11 +128,11 @@ def get_parser() -> ArgumentParser:
         help=f"Path to the wsclean singularity container. If not provided will attempt to download {WSCLEANDOCKER}, a slightly modified wsclean image. ",
     )
     parser.add_argument(
-        "-y",
-        "--yaml-imager-config",
+        "-i",
+        "--imager-config",
         type=Path,
         default=None,
-        help="A glass_image style yaml configuration file to adjust options and self-cal settings. ",
+        help="A glass_image style yaml configuration file to adjust options and self-cal settings. This is intended to hold strictly configurables related to imaging and self-calibration, not configurables about the main program (e.g. work directory)",
     )
 
     return parser
@@ -111,7 +146,12 @@ def cli() -> None:
     if args.verbose:
         logger.setLevel(logging.DEBUG)
 
-    image_cband(ms_path=args.ms, workdir=args.workdir, wsclean_img=args.wsclean_image)
+    image_cband(
+        ms_path=args.ms,
+        workdir=args.workdir,
+        wsclean_img=args.wsclean_image,
+        imager_config=args.imager_config,
+    )
 
 
 if __name__ == "__main__":

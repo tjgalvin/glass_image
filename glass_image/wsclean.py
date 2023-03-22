@@ -69,9 +69,12 @@ def pull_wsclean_container() -> Path:
     return sclient_path
 
 
-def generate_wsclean_cmd(point: Pointing, img_round: int) -> WSCleanCMD:
+def generate_wsclean_cmd(point: Pointing, img_round: Optional[int]=None, options: Optional[WSCleanOptions]=None) -> WSCleanCMD:
     # Get the options for this round of imaging
-    woptions = image_round_options(img_round=img_round)
+    if img_round is None and options is None:
+        raise ValueError(f"Both img_round and options are both unset. ")
+    
+    woptions = options if options is not None else image_round_options(img_round=img_round)
 
     MS = f"{point.ms}"
 

@@ -2,7 +2,7 @@
 """
 import shutil
 from pathlib import Path
-from typing import NamedTuple
+from typing import NamedTuple, Optional
 
 from casatasks import gaincal, applycal, mstransform, cvel, split
 
@@ -39,10 +39,11 @@ def selfcal_round_options(img_round: int) -> CasaSCOptions:
     return options
 
 
-def derive_apply_selfcal(in_point: Pointing, img_round: int = 0) -> Pointing:
+def derive_apply_selfcal(in_point: Pointing, img_round: int = 0, options: Optional[CasaSCOptions] = None) -> Pointing:
+    
     logger.info(f"Will apply self-calibration to {in_point.ms}")
 
-    options = selfcal_round_options(img_round=img_round)
+    options = options if options is not None else selfcal_round_options(img_round=img_round)
 
     caltable = f"pcal{img_round}"
     logger.info(f"Will create solution table: {caltable}")
