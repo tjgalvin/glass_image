@@ -1,6 +1,7 @@
 """The main script runner for GLASS imager
 """
 import os
+import shutil
 import logging
 from argparse import ArgumentParser
 from pathlib import Path
@@ -61,6 +62,13 @@ def image_cband(
         os.chdir(workdir)
     else:
         workdir = Path(os.getcwd())
+
+    # Make a copy of the configuration file to the work directory
+    dest_config_file = workdir / imager_config.name 
+    if imager_config != dest_config_file: 
+        if dest_config_file.exists():
+            logger.warn(f"Removing existing {dest_config_file}. ")
+        shutil.copy(imager_config, dest_config_file)
 
     logger.debug(f"Input MS: {ms_path}")
     name_comps = ms_path.name.split(".")
