@@ -16,6 +16,7 @@ class WSCleanCMD(NamedTuple):
     cmd: str
     outname: str
 
+
 class WSCleanOptions(NamedTuple):
     psfwindow: int = 65
     size: int = 7000
@@ -28,10 +29,7 @@ class WSCleanOptions(NamedTuple):
 def image_round_options(img_round: int) -> WSCleanOptions:
     logger.debug(f"Obtainer wsclean image options")
 
-    options = WSCleanOptions(
-        psfwindow=150,
-        maskthresh=6.5
-    )
+    options = WSCleanOptions(psfwindow=150, maskthresh=6.5)
 
     if img_round == 1:
         options = WSCleanOptions(psfwindow=50, maskthresh=6.0)
@@ -64,12 +62,20 @@ def pull_wsclean_container() -> Path:
     return sclient_path
 
 
-def generate_wsclean_cmd(point: Pointing, img_round: Optional[int]=None, options: Optional[WSCleanOptions]=None) -> WSCleanCMD:
+def generate_wsclean_cmd(
+    point: Pointing,
+    img_round: Optional[int] = None,
+    options: Optional[WSCleanOptions] = None,
+) -> WSCleanCMD:
     # Get the options for this round of imaging
-    if img_round is None and options is None:
-        raise ValueError(f"Both img_round and options are both unset. ")
-    
-    woptions = options if options is not None else image_round_options(img_round=img_round)
+    if isinstance(options, WSCleanOptions):
+        woptions = options
+    elif isinstance(img_round, int):
+        woptions = image_round_options(img_round=img_round)
+    else:
+        raise ValueError(
+            f"Both img_round and options have invalid tyoes or are both unset. "
+        )
 
     MS = f"{point.ms}"
 
@@ -133,7 +139,7 @@ def run_wsclean_cmd(
     wsclean_cmd: WSCleanCMD,
     binddir: Optional[Path] = None,
     move_into: Optional[Path] = None,
-    clean_up: bool = True
+    clean_up: bool = True,
 ) -> None:
     binddir = Path(os.getcwd()) if binddir is None else binddir
     binddir_str = str(binddir)
@@ -160,6 +166,6 @@ def run_wsclean_cmd(
         for file in work_dir.glob(f"{wsclean_cmd.outname}*{{dirty,psf}}.fits"):
             logger.info(f"Deleting {file}.")
             file.unlink()
-    
+
     if move_into is not None:
         move_wsclean_out_into(move_into, wsclean_cmd.outname)

@@ -4,7 +4,7 @@ configuration based imaging specification
 
 from pathlib import Path
 import yaml 
-from typing import Any, Tuple, Dict, Optional, NamedTuple
+from typing import Any, Dict, Optional, NamedTuple
 
 from glass_image.logging import logger 
 from glass_image.wsclean import WSCleanOptions
@@ -14,8 +14,8 @@ from glass_image.errors import ImagerConfigurationError
 OPTIONTYPES = ('casasc', 'wsclean')
 
 class ImageRoundOptions(NamedTuple):
-    wsclean: WSCleanOptions = None
-    casasc: CasaSCOptions = None
+    wsclean: Optional[WSCleanOptions] = None
+    casasc: Optional[CasaSCOptions] = None
 
 def load_yaml_configuration(yaml_config: Path) -> Dict[Any, Any]:
     logger.info(f"Loading configuration file {str(yaml_config)}")

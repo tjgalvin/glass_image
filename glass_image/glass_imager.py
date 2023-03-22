@@ -15,8 +15,8 @@ from glass_image.wsclean import (
 )
 from glass_image.logging import logger
 from glass_image.pointing import Pointing
-from glass_image.casa_selfcal import derive_apply_selfcal, CasaSCOptions
-from glass_image.configuration import get_imager_options, get_round_options
+from glass_image.casa_selfcal import derive_apply_selfcal
+from glass_image.configuration import ImageRoundOptions, get_imager_options, get_round_options
 
 
 class ImagerOptions(NamedTuple):
@@ -77,24 +77,27 @@ def image_cband(
     logger.info(f"Formed point: {point}")
     logger.info(f"WSClean image: {wsclean_img}")
 
-    logger.ddebug(f"Getting Imager related options.")
-    imager_options = (
-        ImagerOptions(**get_imager_options(imager_config))
-        if imager_options is not None
-        else ImagerOptions()
-    )
+    logger.debug(f"Getting Imager related options.")
+    if isinstance(imager_config, Path):
+        imager_options = ImagerOptions(**get_imager_options(imager_config))
+    else:
+        imager_options = ImagerOptions()
+    
 
-    img_round_options = get_round_options(imager_config, img_round=0)
+    img_round_options = ImageRoundOptions()
+    if isinstance(imager_config, Path):
+        img_round_options = get_round_options(imager_config, img_round=0)
+
     image_round(
         wsclean_img=wsclean_img, point=point, wsclean_options=img_round_options.wsclean
     )
 
-    for img_round in range(1, imager_options["rounds"]):
-        wsclean_options = casasc_options = None
-        if imager_config is not None:
-            logger.info(f"Getting options from {imager_options} in {img_round}")
-            img_round_options = get_round_options(imager_options, img_round=img_round)
-
+    for img_round in range(1, imager_options.rounds):
+        img_round_options = ImageRoundOptions()
+        if isinstance(imager_config, Path):
+            logger.info(f"Getting options from {imager_config} in {img_round}")
+            img_round_options = get_round_options(imager_config, img_round=img_round)
+        
         logger.info(f"\n\nAttempting selcalibration for round {img_round}")
         selfcal_point = derive_apply_selfcal(
             in_point=point, img_round=img_round, options=img_round_options.casasc
