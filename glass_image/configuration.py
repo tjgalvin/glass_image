@@ -4,16 +4,18 @@ configuration based imaging specification
 
 from pathlib import Path
 import yaml 
-from typing import Any, Tuple, Dict, Optional
+from typing import Any, Tuple, Dict, Optional, NamedTuple
 
 from glass_image.logging import logger 
 from glass_image.wsclean import WSCleanOptions
 from glass_image.casa_selfcal import CasaSCOptions
 from glass_image.errors import ImagerConfigurationError
 
-Options = Tuple[WSCleanOptions, Optional[CasaSCOptions]]
-
 OPTIONTYPES = ('casasc', 'wsclean')
+
+class ImageRoundOptions(NamedTuple):
+    wsclean: WSCleanOptions = None
+    casasc: CasaSCOptions = None
 
 def load_yaml_configuration(yaml_config: Path) -> Dict[Any, Any]:
     logger.info(f"Loading configuration file {str(yaml_config)}")
@@ -46,12 +48,15 @@ def get_imager_options(yaml_config: Path) -> Dict[Any, Any]:
 
     return config['glass']
 
-def get_round_options(yaml_config: Path, img_round: int) -> Options:
+def get_round_options(yaml_config: Path, img_round: int) -> ImageRoundOptions:
     
     config = load_yaml_configuration(yaml_config)
     
     if img_round == 0:
-        return WSCleanOptions(**config['default']['wsclean']), None
+        return ImageRoundOptions(
+            wsclean = WSCleanOptions(**config['default']['wsclean']), 
+            casasc = None
+        )
     
     logger.debug("Loading the defaults")
     casa_config_args = config['default']['casasc']
@@ -73,6 +78,10 @@ def get_round_options(yaml_config: Path, img_round: int) -> Options:
         if not valid:
             raise ImagerConfigurationError(f"Neither 'casasc' now 'wsclean' options for {img_round=} found in {str(yaml_config)}")
     
-    return WSCleanOptions(**wsclean_config_args), CasaSCOptions(**casa_config_args)         
+    return ImageRoundOptions(
+        wsclean=WSCleanOptions(**wsclean_config_args), 
+        casasc=CasaSCOptions(**casa_config_args)         
+    )
+        
         
     

@@ -28,7 +28,7 @@ def image_round(
     point: Pointing,
     img_round: int = 0,
     wsclean_options: Optional[WSCleanOptions] = None,
-    clean_up: bool=True
+    clean_up: bool = True,
 ) -> None:
     logger.info(f"Will be imaging {point}")
     logger.info(f"Using container: {wsclean_img=}")
@@ -41,7 +41,10 @@ def image_round(
     assert not output_dir.exists(), f"Output folder {output_dir} already exists. "
 
     run_wsclean_cmd(
-        wsclean_img=wsclean_img, wsclean_cmd=wsclean_cmd, move_into=output_dir, clean_up=clean_up
+        wsclean_img=wsclean_img,
+        wsclean_cmd=wsclean_cmd,
+        move_into=output_dir,
+        clean_up=clean_up,
     )
 
 
@@ -50,7 +53,7 @@ def image_cband(
     workdir: Optional[Path] = None,
     wsclean_img: Optional[Path] = None,
     imager_config: Optional[Path] = None,
-    clean_up: bool = True
+    clean_up: bool = True,
 ) -> None:
     assert ms_path.exists(), f"MS {ms_path} does not exist"
 
@@ -81,20 +84,20 @@ def image_cband(
         else ImagerOptions()
     )
 
-    wsclean_options, _ = get_round_options(imager_config, img_round=0)
-    image_round(wsclean_img=wsclean_img, point=point)
+    img_round_options = get_round_options(imager_config, img_round=0)
+    image_round(
+        wsclean_img=wsclean_img, point=point, wsclean_options=img_round_options.wsclean
+    )
 
     for img_round in range(1, imager_options["rounds"]):
         wsclean_options = casasc_options = None
         if imager_config is not None:
             logger.info(f"Getting options from {imager_options} in {img_round}")
-            wsclean_options, casasc_options = get_round_options(
-                imager_options, img_round=img_round
-            )
+            img_round_options = get_round_options(imager_options, img_round=img_round)
 
         logger.info(f"\n\nAttempting selcalibration for round {img_round}")
         selfcal_point = derive_apply_selfcal(
-            in_point=point, img_round=img_round, options=casasc_options
+            in_point=point, img_round=img_round, options=img_round_options.casasc
         )
 
         logger.info(f"\n\nRunning imaging for round {img_round}")
@@ -102,7 +105,8 @@ def image_cband(
             wsclean_img=wsclean_img,
             point=selfcal_point,
             img_round=img_round,
-            wsclean_options=wsclean_options,
+            wsclean_options=img_round_options.wsclean,
+            clean_up=clean_up,
         )
 
         logger.info(f"\n\nUpdating current MS from {point.ms} to {selfcal_point.ms}")
