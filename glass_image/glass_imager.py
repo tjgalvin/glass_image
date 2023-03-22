@@ -114,6 +114,7 @@ def image_cband(
         logger.info(f"\n\nUpdating current MS from {point.ms} to {selfcal_point.ms}")
         point = selfcal_point
 
+    logger.info(f"\n\nFinished imaging {str(ms_path)}.")
 
 def get_parser() -> ArgumentParser:
     parser = ArgumentParser(description="A simple imaging script for GLASS data")
