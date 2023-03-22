@@ -18,6 +18,7 @@ class WSCleanCMD(NamedTuple):
 
 
 class WSCleanOptions(NamedTuple):
+    absmem: int = 100
     psfwindow: int = 65
     size: int = 7000
     forcemask: float = 10
@@ -61,7 +62,7 @@ def generate_wsclean_cmd(
     logger.debug(f"{outname=}")
 
     cmd = f"""wsclean 
-    -abs-mem 100 
+    -abs-mem {options.absmem} 
     -mgain 0.70 
     -force-mask-rounds {options.forcemask} 
     -nmiter 15 
@@ -79,6 +80,7 @@ def generate_wsclean_cmd(
     -join-channels 
     -channels-out {options.channels_out} 
     -multiscale
+    -multiscale-scale-bias 0.8
     -fit-spectral-pol 3
     -data-column DATA 
     {MS}"""
