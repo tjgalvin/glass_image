@@ -16,7 +16,6 @@ class WSCleanCMD(NamedTuple):
     cmd: str
     outname: str
 
-
 class WSCleanOptions(NamedTuple):
     psfwindow: int = 65
     size: int = 7000
@@ -35,18 +34,14 @@ def image_round_options(img_round: int) -> WSCleanOptions:
     )
 
     if img_round == 1:
-        # options = WSCleanOptions(psfwindow=75, maskthresh=6.0)
         options = WSCleanOptions(psfwindow=50, maskthresh=6.0)
     elif img_round == 2:
-        # options = WSCleanOptions(psfwindow=75, maskthresh=6.0)
         options = WSCleanOptions(psfwindow=50, maskthresh=6.0)
     elif img_round == 3:
-        # options = WSCleanOptions(psfwindow=105, maskthresh=4.0)
         options = WSCleanOptions(psfwindow=75, maskthresh=5.0)
     elif img_round == 4:
         options = WSCleanOptions(psfwindow=75, maskthresh=4.0)
     elif img_round > 4:
-        # options = WSCleanOptions(psfwindow=110, maskthresh=3.0)
         options = WSCleanOptions(psfwindow=85, maskthresh=4.0)
 
     logger.info(f"WSClean Options for round {img_round} are {options}")
@@ -138,6 +133,7 @@ def run_wsclean_cmd(
     wsclean_cmd: WSCleanCMD,
     binddir: Optional[Path] = None,
     move_into: Optional[Path] = None,
+    clean_up: bool = True
 ) -> None:
     binddir = Path(os.getcwd()) if binddir is None else binddir
     binddir_str = str(binddir)
@@ -154,8 +150,16 @@ def run_wsclean_cmd(
         stream=True,
     )
 
+    # Streaming the output from the singularity command
     for line in result:
         logger.info(line.rstrip())
 
+    # Cleanup to save space
+    if clean_up:
+        work_dir = Path(os.getcwd())
+        for file in work_dir.glob(f"{wsclean_cmd.outname}*{{dirty,psf}}.fits"):
+            logger.info(f"Deleting {file}.")
+            file.unlink()
+    
     if move_into is not None:
         move_wsclean_out_into(move_into, wsclean_cmd.outname)

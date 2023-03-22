@@ -28,6 +28,7 @@ def image_round(
     point: Pointing,
     img_round: int = 0,
     wsclean_options: Optional[WSCleanOptions] = None,
+    clean_up: bool=True
 ) -> None:
     logger.info(f"Will be imaging {point}")
     logger.info(f"Using container: {wsclean_img=}")
@@ -40,7 +41,7 @@ def image_round(
     assert not output_dir.exists(), f"Output folder {output_dir} already exists. "
 
     run_wsclean_cmd(
-        wsclean_img=wsclean_img, wsclean_cmd=wsclean_cmd, move_into=output_dir
+        wsclean_img=wsclean_img, wsclean_cmd=wsclean_cmd, move_into=output_dir, clean_up=clean_up
     )
 
 
@@ -49,6 +50,7 @@ def image_cband(
     workdir: Optional[Path] = None,
     wsclean_img: Optional[Path] = None,
     imager_config: Optional[Path] = None,
+    clean_up: bool = True
 ) -> None:
     assert ms_path.exists(), f"MS {ms_path} does not exist"
 
