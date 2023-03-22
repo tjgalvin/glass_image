@@ -27,7 +27,6 @@ def image_round(
     wsclean_img: Path,
     point: Pointing,
     wsclean_options: WSCleanOptions,
-    img_round: int = 0,
     clean_up: bool = True,
 ) -> None:
     logger.info(f"Will be imaging {point}")
@@ -37,7 +36,7 @@ def image_round(
         point=point, options=wsclean_options
     )
 
-    output_dir = Path(f"round_{img_round}") if img_round > 0 else Path("no_selfcal")
+    output_dir = Path(f"round_{wsclean_options.round}") if wsclean_options.round > 0 else Path("no_selfcal")
     assert not output_dir.exists(), f"Output folder {output_dir} already exists. "
 
     run_wsclean_cmd(
