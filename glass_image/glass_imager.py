@@ -56,6 +56,7 @@ def image_cband(
     clean_up: bool = True,
 ) -> None:
     assert ms_path.exists(), f"MS {ms_path} does not exist"
+    assert imager_config.exists(), f"Imager configuration {imager_config} does not exist"
 
     if workdir is not None:
         logger.info(f"Changing directory to: {workdir}")
@@ -94,7 +95,8 @@ def image_cband(
         wsclean_img=wsclean_img, point=point, wsclean_options=img_round_options.wsclean
     )
 
-    for img_round in range(1, imager_options.rounds):
+    # Remember the range command is not inclusive
+    for img_round in range(1, imager_options.rounds+1):
         img_round_options = get_round_options(imager_config, img_round=img_round)
         
         logger.info(f"\n\nAttempting selcalibration for round {img_round}")

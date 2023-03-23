@@ -10,7 +10,7 @@ from spython.main import Client as sclient
 from glass_image import WSCLEANDOCKER
 from glass_image.logging import logger
 from glass_image.pointing import Pointing
-
+from glass_image.utils import remove_files_folders
 
 class WSCleanCMD(NamedTuple):
     cmd: str
@@ -136,10 +136,10 @@ def run_wsclean_cmd(
     # Cleanup to save space
     if clean_up:
         work_dir = Path(os.getcwd())
-        for file_type in ["psf", "dirty"]:
-            for file in work_dir.glob(f"{wsclean_cmd.outname}*{file_type}.fits"):
-                logger.info(f"Deleting {file}.")
-                file.unlink()
-
+        remove_files_folders(
+            list(work_dir.glob(f"{wsclean_cmd.outname}*dirty.fits")) + 
+            list(work_dir.glob(f"{wsclean_cmd.outname}*psf.fits")) 
+        )
+        
     if move_into is not None:
         move_wsclean_out_into(move_into, wsclean_cmd.outname)

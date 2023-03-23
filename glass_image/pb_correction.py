@@ -8,9 +8,44 @@ from argparse import ArgumentParser
 
 from astropy.io import fits
 
-from glass_image.pointing import Pointing
-from glass_image.utils import call
+from glass_image.utils import remove_files_folders, call
 from glass_image.logging import logger
+
+def derive_weight_map(mir_app_img: Path) -> None:
+    """Compute a weight map through miriad machinary that corresponds 
+    to the input image. The map is going to be the inverse of the primary beam
+    squared
+
+    Args:
+        mir_app_img (Path): Miriad image that will have the weight map generated for
+    """
+
+    mir_sens_img = mir_app_img.with_suffix('.sens')
+    mir_weight_img = mir_app_img.with_suffix('.weight')
+    fits_weight_img = mir_weight_img.with_suffix('.weight.fits')
+
+    logger.debug(f"Producing sensitivity map.")
+    call(
+        ["linmos", 
+         f"in={str(mir_app_img)}", 
+         f"out={str(mir_sens_img)}", 
+         "rms=1", 
+         "options=sensitivity"]
+    )
+    
+    logger.debug(f"Converting to a weight map. ")
+    call(
+        ["maths", f"exp=1./<{str(mir_sens_img)}>**2.0", f"out={str(mir_weight_img)}"]
+    )
+
+    logger.info(f"Writing {str(fits_weight_img)}")
+    call(
+        ["fits", f"in={str(mir_weight_img)}", f"out={str(fits_weight_img)}", "op=xyout"]
+    )
+
+    remove_files_folders(
+        [mir_sens_img, mir_weight_img]
+    )
 
 
 def apply_miriad_pb(fits_app_img: Path) -> None:
@@ -42,13 +77,14 @@ def apply_miriad_pb(fits_app_img: Path) -> None:
     )
 
     logger.info(f"Created {mir_int_img}, exporting FITS image.")
-    call(["fits", f"in={str(mir_int_img)}", f"out={str(fits_int_img)}", "op=xyin"])
+    call(["fits", f"in={str(mir_int_img)}", f"out={str(fits_int_img)}", "op=xyout"])
+
+    derive_weight_map(mir_app_img=mir_app_img)
 
     logger.info("Removing miriad files")
-    for file in [mir_app_img, mir_int_img]:
-        logger.debug(f"Deleting {file}")
-        shutil.rmtree(file)
-
+    remove_files_folders([mir_app_img, mir_int_img])
+    
+    
 
 def get_parser() -> ArgumentParser:
     parser = ArgumentParser(

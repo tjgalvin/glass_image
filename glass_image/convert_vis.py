@@ -12,7 +12,7 @@ from casatasks import importmiriad
 from pyrap import tables
 
 from glass_image.logging import logger
-from glass_image.utils import ensure_dir_exists, call
+from glass_image.utils import remove_files_folders, ensure_dir_exists, call
 
 def remove_nonconformant_timesteps(target_ms: Path, baselines: int=15) -> None:
     """Some ATCA measurement sets has a strange number of TIMESTEPS recorded, which
@@ -110,19 +110,8 @@ def convert_miriad_to_ms(
 
     if clean_up:
         logger.info(f"Cleaning up files")
-        files = [uvaver_out]
-        for file in files:
-            file = Path(file)
-            if not file.exists(): 
-                logger.debug(f"File {file} does not exist, so can not be deleted. Skipping. ")
-                continue 
-    
-            logger.debug(f"Removing {file}")
-            if file.is_dir():
-                shutil.rmtree(file)
-            else:
-                file.unlink()
-
+        remove_files_folders([uvaver_out])
+        
     return ms_out
 
 

@@ -3,11 +3,13 @@
 import shutil
 from pathlib import Path
 from typing import NamedTuple, Optional
+from time import sleep
 
 from casatasks import gaincal, applycal, mstransform, cvel, split
 
 from glass_image.logging import logger
 from glass_image.pointing import Pointing
+from glass_image.utils import remove_files_folders
 
 
 class CasaSCOptions(NamedTuple):
@@ -18,7 +20,6 @@ class CasaSCOptions(NamedTuple):
 
 
 def derive_apply_selfcal(in_point: Pointing, options: CasaSCOptions) -> Pointing:
-    
     logger.info(f"Will apply self-calibration to {in_point.ms}")
 
     caltable = f"pcal{options.round}"
@@ -52,7 +53,7 @@ def derive_apply_selfcal(in_point: Pointing, options: CasaSCOptions) -> Pointing
         caltable=caltable,
         solint=options.solint,
         calmode=options.calmode,
-        minsnr=0
+        minsnr=0,
     )
 
     logger.info(f"Solutions derived. Applying to data. ")
@@ -64,7 +65,14 @@ def derive_apply_selfcal(in_point: Pointing, options: CasaSCOptions) -> Pointing
     in_ms_str = str(in_point.ms)
     split_ms_str = f"{in_ms_str}_split"
 
+    logger.debug(f"Sleeping for 10 seconds in an effort to free a lock")
+    sleep(10)
+
     split(vis=transform_ms_str, outputvis=split_ms_str, datacolumn="corrected")
+
+    logger.info("Transforming to a single spectral window")
+    logger.debug(f"Sleeping for 10 seconds in an effort to free a lock")
+    sleep(10)
 
     cvel(
         vis=split_ms_str,
@@ -76,8 +84,6 @@ def derive_apply_selfcal(in_point: Pointing, options: CasaSCOptions) -> Pointing
 
     logger.info(f"Solutions applied. Created {out_point.ms}")
 
-    for remove_ms in (transform_ms_str, split_ms_str):
-        logger.info(f"Removing {remove_ms}")
-        shutil.rmtree(remove_ms)
+    remove_files_folders([Path(file) for file in (transform_ms_str, split_ms_str)])
 
     return out_point
