@@ -10,14 +10,19 @@ from astropy.io import fits
 
 from glass_image.utils import remove_files_folders, call
 from glass_image.logging import logger
+from glass_image.image_utils import img_mad
 
-def derive_weight_map(mir_app_img: Path) -> None:
+def derive_weight_map(mir_app_img: Path, rms: float = 1.0) -> Path:
     """Compute a weight map through miriad machinary that corresponds 
     to the input image. The map is going to be the inverse of the primary beam
     squared
 
     Args:
         mir_app_img (Path): Miriad image that will have the weight map generated for
+        rms (float): The RMS of the image, which is used in the scaling of the weight map. 
+    
+    Returns: 
+        Path -- The weight map
     """
 
     mir_sens_img = mir_app_img.with_suffix('.sens')
@@ -35,7 +40,7 @@ def derive_weight_map(mir_app_img: Path) -> None:
     
     logger.debug(f"Converting to a weight map. ")
     call(
-        ["maths", f"exp=1./<{str(mir_sens_img)}>**2.0", f"out={str(mir_weight_img)}"]
+        ["maths", f"exp=1/<{str(mir_sens_img)}>**2.0", f"out={str(mir_weight_img)}"]
     )
 
     logger.info(f"Writing {str(fits_weight_img)}")
@@ -47,10 +52,21 @@ def derive_weight_map(mir_app_img: Path) -> None:
         [mir_sens_img, mir_weight_img]
     )
 
+    logger.info(f"Scaling weight map by rms-squared.")
+    with fits.open(str(fits_weight_img), mode='update') as open_fits_weight:
+        open_fits_weight[0].data /= rms ** 2.
+
+        open_fits_weight.flush()
+
+    return fits_weight_img
 
 def apply_miriad_pb(fits_app_img: Path) -> None:
     if not fits_app_img.exists():
-        raise FileNotFoundError(f"The fukes {fits_app_img} does not exist. Exiting. ")
+        raise FileNotFoundError(f"The file {fits_app_img} does not exist. Exiting. ")
+
+    logger.info(f"Estimating noise in {fits_app_img}.")
+    img_std = img_mad(fits_app_img) * 1.4826 # MAS to Std. Dev. 
+    logger.info(f"Estimated noise is {img_std * 1000 * 1000:.2f}uJy")
 
     img_header = fits.getheader(str(fits_app_img))
 
@@ -79,7 +95,7 @@ def apply_miriad_pb(fits_app_img: Path) -> None:
     logger.info(f"Created {mir_int_img}, exporting FITS image.")
     call(["fits", f"in={str(mir_int_img)}", f"out={str(fits_int_img)}", "op=xyout"])
 
-    derive_weight_map(mir_app_img=mir_app_img)
+    derive_weight_map(mir_app_img=mir_app_img, rms=img_std)
 
     logger.info("Removing miriad files")
     remove_files_folders([mir_app_img, mir_int_img])
