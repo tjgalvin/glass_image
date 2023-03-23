@@ -12,60 +12,64 @@ from glass_image.utils import remove_files_folders, call
 from glass_image.logging import logger
 from glass_image.image_utils import img_mad
 
+
 def derive_weight_map(mir_app_img: Path, rms: float = 1.0) -> Path:
-    """Compute a weight map through miriad machinary that corresponds 
+    """Compute a weight map through miriad machinary that corresponds
     to the input image. The map is going to be the inverse of the primary beam
     squared
 
     Args:
         mir_app_img (Path): Miriad image that will have the weight map generated for
-        rms (float): The RMS of the image, which is used in the scaling of the weight map. 
-    
-    Returns: 
+        rms (float): The RMS of the image, which is used in the scaling of the weight map.
+
+    Returns:
         Path -- The weight map
     """
 
-    mir_sens_img = mir_app_img.with_suffix('.sens')
-    mir_weight_img = mir_app_img.with_suffix('.weight')
-    fits_weight_img = mir_weight_img.with_suffix('.weight.fits')
+    mir_sens_img = mir_app_img.with_suffix(".sens")
+    mir_weight_img = mir_app_img.with_suffix(".weight")
+    fits_weight_img = mir_weight_img.with_suffix(".weight.fits")
 
     logger.debug(f"Producing sensitivity map.")
     call(
-        ["linmos", 
-         f"in={str(mir_app_img)}", 
-         f"out={str(mir_sens_img)}", 
-         "rms=1", 
-         "options=sensitivity"]
+        [
+            "linmos",
+            f"in={str(mir_app_img)}",
+            f"out={str(mir_sens_img)}",
+            "rms=1",
+            "options=sensitivity",
+        ]
     )
-    
+
+    # The RMS-squared term could be placed in this expressions, but would
+    # rather avoid low number business and fortran code in miriad trying
+    # to parse it
     logger.debug(f"Converting to a weight map. ")
-    call(
-        ["maths", f"exp=1/<{str(mir_sens_img)}>**2.0", f"out={str(mir_weight_img)}"]
-    )
+    call(["maths", f"exp=1/<{str(mir_sens_img)}>**2.0", f"out={str(mir_weight_img)}"])
 
     logger.info(f"Writing {str(fits_weight_img)}")
     call(
         ["fits", f"in={str(mir_weight_img)}", f"out={str(fits_weight_img)}", "op=xyout"]
     )
 
-    remove_files_folders(
-        [mir_sens_img, mir_weight_img]
-    )
-
     logger.info(f"Scaling weight map by rms-squared.")
-    with fits.open(str(fits_weight_img), mode='update') as open_fits_weight:
-        open_fits_weight[0].data /= rms ** 2.
+    with fits.open(str(fits_weight_img), mode="update") as open_fits_weight:
+        open_fits_weight[0].data /= rms**2.0
 
         open_fits_weight.flush()
 
+    # Delete the files generated but not needed
+    remove_files_folders([mir_sens_img, mir_weight_img])
+
     return fits_weight_img
+
 
 def apply_miriad_pb(fits_app_img: Path) -> None:
     if not fits_app_img.exists():
         raise FileNotFoundError(f"The file {fits_app_img} does not exist. Exiting. ")
 
     logger.info(f"Estimating noise in {fits_app_img}.")
-    img_std = img_mad(fits_app_img) * 1.4826 # MAS to Std. Dev. 
+    img_std = img_mad(fits_app_img) * 1.4826  # MAS to Std. Dev.
     logger.info(f"Estimated noise is {img_std * 1000 * 1000:.2f}uJy")
 
     img_header = fits.getheader(str(fits_app_img))
@@ -97,10 +101,9 @@ def apply_miriad_pb(fits_app_img: Path) -> None:
 
     derive_weight_map(mir_app_img=mir_app_img, rms=img_std)
 
-    logger.info("Removing miriad files")
+    # Remove tthe temporary files generated and not needed
     remove_files_folders([mir_app_img, mir_int_img])
-    
-    
+
 
 def get_parser() -> ArgumentParser:
     parser = ArgumentParser(
