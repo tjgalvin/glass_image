@@ -26,7 +26,7 @@ class WSCleanOptions(NamedTuple):
     autothresh: float = 0.5
     channels_out: int = 8
     round: int = 0
-
+    mgain: float = 0.7
 
 def pull_wsclean_container() -> Path:
     """Download the docker image for wsclean
@@ -63,7 +63,7 @@ def generate_wsclean_cmd(
 
     cmd = f"""wsclean 
     -abs-mem {options.absmem} 
-    -mgain 0.70 
+    -mgain {options.mgain} 
     -force-mask-rounds {options.forcemask} 
     -nmiter 15 
     -niter 500000 
@@ -80,7 +80,7 @@ def generate_wsclean_cmd(
     -join-channels 
     -channels-out {options.channels_out} 
     -multiscale
-    -multiscale-scale-bias 0.8
+    -multiscale-scale-bias 0.6
     -fit-spectral-pol 3
     -data-column DATA 
     {MS}"""

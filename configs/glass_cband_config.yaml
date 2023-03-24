@@ -1,0 +1,50 @@
+glass:
+  rounds: 4
+
+default:
+  casasc:
+   solint: "40s"
+   nspw: 4
+   calmode: "p"
+  wsclean:
+   psfwindow: 65
+   size: 7000
+   forcemask: 8
+   maskthresh: 5
+   autothresh: 1.0
+   channels_out: 8
+   mgain: 0.6
+
+sc: 
+  1:
+    casasc:
+      nspw: 4
+      solint: "10s"
+    wsclean:
+      psfwindow: 50
+      maskthresh: 6.0
+        
+  2:
+    casasc:
+      nspw: 4
+      solint: "10s"
+    wsclean:
+      psfwindow: 50
+      maskthresh: 6.0
+        
+  3:
+    casasc:
+      nspw: 4
+      solint: "10s"
+    wsclean:
+      psfwindow: 75
+      maskthresh: 5.0
+        
+  4:
+    casasc:
+      nspw: 4
+      solint: "10s"
+    wsclean:
+      psfwindow: 75
+      maskthresh: 4.0
+        
