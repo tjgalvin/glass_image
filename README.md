@@ -30,10 +30,15 @@ pip install git+https://github.com/tjgalvin/glass_image.git
 
 There are two scripts currently made available:
 
-- `glass_vis2ms`
-- `glass_image`
+- `glass_vis2ms`: Converts a `miriad` visbility file to a measurement set
+- `glass_image`: Uses `wsclean` for imaging and `casa` for self-calibration. It is driven by a yaml file that outlines imaging and self-calibration parameters used over rounds
+- `glass_pbimage`: Primary beam correct an image using `miriad` and produce a corresponding wight map for use in co-adding in other programs, i.e. swarp
 
-Both are made available as callable programs once the `glass_image` has been installed. 
+These tools are made available as callable programs once the `glass_image` has been installed. 
+
+# Imager Configuration File
+
+A very primative yaml configuration file has been defined to help describe the type of imaging and self-calibration that owuld be performed. It was initially intended to help ease the difficulty in modifying the settings directly in the code. There are examples of the configuraiton file under the `configs` directory. 
 
 # Supported Versions
 
