@@ -6,11 +6,13 @@ from typing import NamedTuple, Optional
 from glob import glob
 
 from spython.main import Client as sclient
+from astropy.io import fits
 
 from glass_image import WSCLEANDOCKER
 from glass_image.logging import logger
 from glass_image.pointing import Pointing
 from glass_image.utils import remove_files_folders
+
 
 class WSCleanCMD(NamedTuple):
     cmd: str
@@ -27,6 +29,7 @@ class WSCleanOptions(NamedTuple):
     channels_out: int = 8
     round: int = 0
     mgain: float = 0.7
+
 
 def pull_wsclean_container() -> Path:
     """Download the docker image for wsclean
@@ -48,7 +51,6 @@ def generate_wsclean_cmd(
     point: Pointing,
     options: WSCleanOptions,
 ) -> WSCleanCMD:
-    
     MS = f"{point.ms}"
 
     outname = (
@@ -137,9 +139,72 @@ def run_wsclean_cmd(
     if clean_up:
         work_dir = Path(os.getcwd())
         remove_files_folders(
-            list(work_dir.glob(f"{wsclean_cmd.outname}*dirty.fits")) + 
-            list(work_dir.glob(f"{wsclean_cmd.outname}*psf.fits")) 
+            list(work_dir.glob(f"{wsclean_cmd.outname}*dirty.fits"))
+            + list(work_dir.glob(f"{wsclean_cmd.outname}*psf.fits"))
+            + list(work_dir.glob(f"{wsclean_cmd.outname}*residual.fits"))
         )
-        
+
     if move_into is not None:
         move_wsclean_out_into(move_into, wsclean_cmd.outname)
+
+
+def generate_wsclean_header(
+    wsclean_img: Path,
+    point: Pointing,
+    options: WSCleanOptions,
+    binddir: Optional[Path] = None,
+) -> fits.header.Header:
+    MS = point.ms
+    logger.info(f"Generating a dirty map for wsclean {point.ms}. ")
+
+    binddir = Path(os.getcwd()) if binddir is None else binddir
+    binddir_str = str(binddir)
+
+    outname = f"{point.field}_" f"round{options.round}_" "mask"
+
+    cmd = f"""wsclean 
+    -abs-mem {options.absmem} 
+    -mgain 1.0
+    -nmiter 1 
+    -niter 0 
+    -name {outname} 
+    -size {options.size} {options.size} 
+    -scale 0.3asec 
+    -weight briggs 0.5 
+    -pol XX 
+    -use-wgridder 
+    -join-channels 
+    -channels-out {options.channels_out} 
+    -data-column DATA 
+    {MS}"""
+
+    cmd = " ".join([i.strip() for i in cmd.splitlines()])
+    logger.debug(f"The wsclean command is \n {cmd}")
+
+    logger.info(f"Constructed out name if {outname}")
+    logger.debug(f"Dirty wsclean command is {cmd}")
+
+    result = sclient.execute(
+        image=wsclean_img,
+        command=cmd,
+        bind=binddir_str,
+        return_result=True,
+        stream=True,
+    )
+
+    # Streaming the output from the singularity command
+    for line in result:
+        logger.info(line.rstrip())
+
+    work_dir = Path(os.getcwd())
+
+    image_header = fits.getheader(f"{outname}-MFS-image.fits")
+
+    remove_files_folders(
+        list(work_dir.glob(f"{outname}-00??*fits"))
+        + list(work_dir.glob(f"{outname}-MFS-*.fits"))
+    )
+
+    logger.debug(f"Imager header is {type(image_header)}")
+
+    return image_header

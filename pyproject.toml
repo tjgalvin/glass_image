@@ -18,6 +18,7 @@ casatools = "^6.5.3.28"
 casatasks = "^6.5.3.28"
 python-casacore = "^3.5.2"
 pyyaml = "^6.0"
+reproject = "^0.10.0"
 
 [tool.poetry.group.dev.dependencies]
 black = "^23.1.0"
@@ -27,7 +28,7 @@ mypy = "^1.0.1"
 glass_image = 'glass_image.glass_imager:cli'
 glass_vis2ms = 'glass_image.convert_vis:cli'
 glass_pbimage = 'glass_image.pb_correction:cli'
-
+glass_cleanmask = 'glass_image.clean_mask:cli'
 
 [build-system]
 requires = ["poetry-core"]
