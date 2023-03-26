@@ -48,9 +48,10 @@ def cutout_mask(image_header: fits.header.Header, mosaic_mask: Path, point: Poin
                 shape_out=img_shape
         )
     
-    logger.info(f"Extracted image header {extract_img}")
+    logger.info(f"Extracted clean mask image. ")
     
-    out_path = Path(f"{point.field}_clean_mask.fits")
+    out_path = point.ms.parent / Path(f"{point.field}_clean_mask.fits")
+    logger.info(f"Writing mask image to {out_path}")
     fits.writeto(
         str(out_path),
         extract_img[0],

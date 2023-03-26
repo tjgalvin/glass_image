@@ -29,18 +29,18 @@ def create_clean_mask(
         imager_config.exists()
     ), f"Imager configuration {imager_config} does not exist"
 
-    if workdir is not None:
-        logger.info(f"Changing directory to: {workdir}")
-        os.chdir(workdir)
-    else:
-        workdir = Path(os.getcwd())
+    if workdir is None:
+        workdir = Path(ms_path.parent)
+
+    logger.info(f"Changing directory to: {workdir}")
+    os.chdir(workdir)
 
     logger.debug(f"Input MS: {ms_path}")
     name_comps = ms_path.name.split(".")
     logger.debug(f"{name_comps}")
     field = "_".join(name_comps[:1])
 
-    point = Pointing(workdir=workdir, field=field, ms=ms_path)
+    point = Pointing(workdir=workdir, field=field, ms=Path(ms_path.name))
 
     if wsclean_img is None:
         logger.info("No wsclean-image provided. Will attempt to download. ")
@@ -56,6 +56,7 @@ def create_clean_mask(
     image_header = generate_wsclean_header(
         wsclean_img=wsclean_img, point=point, options=img_round_options.wsclean
     )
+    
     cutout_mask(image_header=image_header, mosaic_mask=mosaic_mask, point=point, options=img_round_options)
 
 
@@ -94,7 +95,7 @@ def cli() -> None:
     if args.verbose:
         logger.setLevel(logging.DEBUG)
 
-    create_clean_mask(args.ms, args.imager_config, args.mask, wsclean_img=args.wsclean_image)
+    create_clean_mask(args.ms, args.imager_config.absolute(), args.mask, wsclean_img=args.wsclean_image)
 
 
 if __name__ == "__main__":
