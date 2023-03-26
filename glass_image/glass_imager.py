@@ -88,7 +88,6 @@ def image_cband(
     logger.debug(f"Getting Imager related options.")
     imager_options = ImagerOptions(**get_imager_options(imager_config))
     
-
     img_round_options = get_round_options(imager_config, img_round=0)
 
     image_round(

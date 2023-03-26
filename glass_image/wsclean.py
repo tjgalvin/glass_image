@@ -12,7 +12,7 @@ from glass_image import WSCLEANDOCKER
 from glass_image.logging import logger
 from glass_image.pointing import Pointing
 from glass_image.utils import remove_files_folders
-
+from glass_image.clean_mask import find_fits_mask
 
 class WSCleanCMD(NamedTuple):
     cmd: str
@@ -29,6 +29,7 @@ class WSCleanOptions(NamedTuple):
     channels_out: int = 8
     round: int = 0
     mgain: float = 0.7
+    fitsmask: bool = False
 
 
 def pull_wsclean_container() -> Path:
@@ -52,26 +53,42 @@ def generate_wsclean_cmd(
     options: WSCleanOptions,
 ) -> WSCleanCMD:
     MS = f"{point.ms}"
-
-    outname = (
+    
+    if options.fitsmask:
+        fits_clean_mask = find_fits_mask(point=point)
+        logger.info(f"Using FITS clean mask in {fits_clean_mask}")
+    
+        outname = (
+            f"{point.field}_"
+            f"fitscleanmask_"
+            f"round{options.round}"
+        )
+        mask_options = f"-fits-mask {str(fits_clean_mask)}"
+    else:
+        outname = (
         f"{point.field}_"
-        f"fm{options.forcemask}_"
-        f"psfw{options.psfwindow}_"
-        f"mt{options.maskthresh}_"
-        f"at{options.autothresh}_"
-        f"round{options.round}"
-    )
+            f"fm{options.forcemask}_"
+            f"psfw{options.psfwindow}_"
+            f"mt{options.maskthresh}_"
+            f"at{options.autothresh}_"
+            f"round{options.round}"
+        )
+        mask_options = (
+            f"-force-mask-rounds {options.forcemask} "
+            f"-local-rms "
+            f"-auto-mask {options.maskthresh} "
+            f"-local-rms-window {options.psfwindow} "
+        )
+    
     logger.debug(f"{outname=}")
+    logger.debug(f"{mask_options}")
 
     cmd = f"""wsclean 
     -abs-mem {options.absmem} 
-    -mgain {options.mgain} 
-    -force-mask-rounds {options.forcemask} 
+    -mgain {options.mgain}      
+    {mask_options} 
     -nmiter 15 
     -niter 500000 
-    -local-rms 
-    -auto-mask {options.maskthresh} 
-    -local-rms-window {options.psfwindow} 
     -auto-threshold {options.autothresh} 
     -name {outname} 
     -size {options.size} {options.size} 

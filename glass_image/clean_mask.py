@@ -21,6 +21,26 @@ from glass_image.pointing import Pointing
 from glass_image.configuration import get_imager_options, get_round_options
 from glass_image.wsclean import pull_wsclean_container, generate_wsclean_header
 from glass_image.configuration import ImageRoundOptions
+from glass_image.errors import FITSCleanMaskNotFound
+
+def find_fits_mask(point: Pointing) -> Path:
+    """Searches and returns the Path to the clean mask. The initial signal-cut
+    mask is intended to be produced from the larger mosaic co-add of all data. 
+    This FITS clean mask is to be an extract of the larger mosaic, where the region
+    corresponds to the region being imaged. 
+
+    Args:
+        point (Pointing): Measurement set pointing details that the FITS clean mask corresponds to
+
+    Returns:
+        Path: Path to the generated clean ask
+    """
+    out_path = Path(f"{point.field}_clean_mask.fits")
+
+    if not out_path.exists():
+        raise FITSCleanMaskNotFound(out_path)
+    
+    return out_path
 
 def cutout_mask(image_header: fits.header.Header, mosaic_mask: Path, point: Pointing, options: ImageRoundOptions) -> Path:
     logger.info(f"Will be extracting clean mask from {mosaic_mask}")
