@@ -44,10 +44,16 @@ def generate_wsclean_cmd(
     
         outname = (
             f"{point.field}_"
+            f"psfw{options.psfwindow}_"
             f"fitscleanmask_"
+            f"at{options.autothresh}_"
             f"round{options.round}"
         )
-        mask_options = f"-fits-mask {str(fits_clean_mask)}"
+        mask_options = (
+            f"-fits-mask {str(fits_clean_mask)} "
+            f"-local-rms "
+            f"-local-rms-window {options.psfwindow} "
+        )
     else:
         outname = (
         f"{point.field}_"
