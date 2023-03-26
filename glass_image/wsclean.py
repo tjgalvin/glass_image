@@ -71,8 +71,8 @@ def generate_wsclean_cmd(
     -abs-mem {options.absmem} 
     -mgain {options.mgain}      
     {mask_options} 
-    -nmiter 15 
-    -niter 500000 
+    -nmiter {options.nmiter} 
+    -niter {options.niter} 
     -auto-threshold {options.autothresh} 
     -name {outname} 
     -size {options.size} {options.size} 

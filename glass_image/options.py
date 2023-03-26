@@ -21,6 +21,8 @@ class WSCleanOptions(NamedTuple):
     round: int = 0
     mgain: float = 0.7
     fitsmask: bool = False
+    nmiter: int = 15
+    niter: int = 50000
 
 class CasaSCOptions(NamedTuple):
     solint: str = "60s"
