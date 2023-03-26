@@ -33,6 +33,7 @@ There are two scripts currently made available:
 - `glass_vis2ms`: Converts a `miriad` visbility file to a measurement set
 - `glass_image`: Uses `wsclean` for imaging and `casa` for self-calibration. It is driven by a yaml file that outlines imaging and self-calibration parameters used over rounds
 - `glass_pbimage`: Primary beam correct an image using `miriad` and produce a corresponding wight map for use in co-adding in other programs, i.e. swarp
+- `glass_cleanmask`: Create a clean mask for a pointing, extracted from a large clean mask image. The intention is that a region will be co-added to give optimal sensitivity, then a 'signal' image will be created. The creation of this signal map and the corresponding thresholding is not currently performed by this code. 
 
 These tools are made available as callable programs once the `glass_image` has been installed. 
 
