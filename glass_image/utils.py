@@ -3,7 +3,7 @@
 import shutil
 import subprocess
 from pathlib import Path
-from typing import List, Iterable
+from typing import List
 
 from glass_image.logging import logger
 

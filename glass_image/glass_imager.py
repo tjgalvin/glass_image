@@ -12,17 +12,12 @@ from glass_image.wsclean import (
     pull_wsclean_container,
     generate_wsclean_cmd,
     run_wsclean_cmd,
-    WSCleanOptions,
 )
 from glass_image.logging import logger
 from glass_image.pointing import Pointing
 from glass_image.casa_selfcal import derive_apply_selfcal
-from glass_image.configuration import ImageRoundOptions, get_imager_options, get_round_options
-
-
-class ImagerOptions(NamedTuple):
-    rounds: int = 5
-
+from glass_image.configuration import get_imager_options, get_round_options
+from glass_image.options import ImagerOptions, WSCleanOptions
 
 def image_round(
     wsclean_img: Path,

@@ -1,8 +1,6 @@
 """Steps and tasks for self-calibration
 """
-import shutil
 from pathlib import Path
-from typing import NamedTuple, Optional
 from time import sleep
 
 from casatasks import gaincal, applycal, mstransform, cvel, split
@@ -10,14 +8,7 @@ from casatasks import gaincal, applycal, mstransform, cvel, split
 from glass_image.logging import logger
 from glass_image.pointing import Pointing
 from glass_image.utils import remove_files_folders
-
-
-class CasaSCOptions(NamedTuple):
-    solint: str = "60s"
-    nspw: int = 4
-    calmode: str = "p"
-    round: int = 0
-
+from glass_image.options import CasaSCOptions
 
 def derive_apply_selfcal(in_point: Pointing, options: CasaSCOptions) -> Pointing:
     logger.info(f"Will apply self-calibration to {in_point.ms}")

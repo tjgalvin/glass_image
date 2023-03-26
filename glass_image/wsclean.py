@@ -12,24 +12,8 @@ from glass_image import WSCLEANDOCKER
 from glass_image.logging import logger
 from glass_image.pointing import Pointing
 from glass_image.utils import remove_files_folders
-from glass_image.clean_mask import find_fits_mask
-
-class WSCleanCMD(NamedTuple):
-    cmd: str
-    outname: str
-
-
-class WSCleanOptions(NamedTuple):
-    absmem: int = 100
-    psfwindow: int = 65
-    size: int = 7000
-    forcemask: float = 10
-    maskthresh: float = 5
-    autothresh: float = 0.5
-    channels_out: int = 8
-    round: int = 0
-    mgain: float = 0.7
-    fitsmask: bool = False
+from glass_image.image_utils import find_fits_mask
+from glass_image.options import WSCleanCMD, WSCleanOptions
 
 
 def pull_wsclean_container() -> Path:
