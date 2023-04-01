@@ -24,6 +24,8 @@ class WSCleanOptions(NamedTuple):
     fitsmask: bool = False
     nmiter: int = 15
     niter: int = 50000
+    multiscale: bool = False
+    multiscale_scale_bias: float = 0.9
 
 class CasaSCOptions(NamedTuple):
     solint: str = "60s"

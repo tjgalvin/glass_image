@@ -48,7 +48,7 @@ def derive_weight_map(mir_app_img: Path, nu_bw: float, rms: float = 1.0) -> Path
     # rather avoid low number business and fortran code in miriad trying
     # to parse it
     logger.debug(f"Converting to a weight map. ")
-    call(["maths", f"exp=1/<{str(mir_sens_img)}>**2.0", f"out={str(mir_weight_img)}"])
+    call(["maths", f"exp=1.0/<{str(mir_sens_img)}>", f"out={str(mir_weight_img)}"])
 
     logger.info(f"Writing {str(fits_weight_img)}")
     call(
@@ -57,7 +57,11 @@ def derive_weight_map(mir_app_img: Path, nu_bw: float, rms: float = 1.0) -> Path
 
     logger.info(f"Scaling weight map by rms-squared.")
     with fits.open(str(fits_weight_img), mode="update") as open_fits_weight:
-        open_fits_weight[0].data /= rms**2.0
+        data = open_fits_weight[0].data
+        
+        logger.info(f"Scaling weight by {rms}**2")
+        data = data**2.0 / rms**2.0
+        open_fits_weight[0].data = data
 
         open_fits_weight.flush()
 

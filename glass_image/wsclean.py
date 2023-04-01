@@ -70,6 +70,14 @@ def generate_wsclean_cmd(
             f"-local-rms-window {options.psfwindow} "
         )
     
+    if options.multiscale:
+        multiscale = (
+            f"-multiscale "
+            f"-multiscale-scale-bias {options.multiscale_scale_bias} "
+        )
+    else:
+        multiscale = ""
+    
     logger.debug(f"{outname=}")
     logger.debug(f"{mask_options}")
 
@@ -87,12 +95,13 @@ def generate_wsclean_cmd(
     -pol I 
     -use-wgridder 
     -join-channels 
+    {multiscale}
     -channels-out {options.channels_out} 
-    -multiscale
-    -multiscale-scale-bias 0.9
     -fit-spectral-pol 3
     -data-column DATA 
     {MS}"""
+
+    
 
     cmd = " ".join([i.strip() for i in cmd.splitlines()])
     logger.debug(f"The wsclean command is \n {cmd}")
