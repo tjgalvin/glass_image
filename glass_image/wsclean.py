@@ -97,7 +97,7 @@ def generate_wsclean_cmd(
     -join-channels 
     {multiscale}
     -channels-out {options.channels_out} 
-    -fit-spectral-pol 3
+    -fit-spectral-pol {options.fit_spectral_pol}
     -data-column DATA 
     {MS}"""
 

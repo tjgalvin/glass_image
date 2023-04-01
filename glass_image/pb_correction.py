@@ -100,6 +100,7 @@ def apply_miriad_pb(fits_app_img: Path) -> None:
             f"in={str(mir_app_img)}",
             f"out={str(mir_int_img)}",
             f"bw={int(nu_bw/1e9)},10",
+            f"rms={img_std}"
         ]
     )
 
