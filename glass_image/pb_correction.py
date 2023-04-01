@@ -13,13 +13,14 @@ from glass_image.logging import logger
 from glass_image.image_utils import img_mad
 
 
-def derive_weight_map(mir_app_img: Path, rms: float = 1.0) -> Path:
+def derive_weight_map(mir_app_img: Path, nu_bw: float, rms: float = 1.0) -> Path:
     """Compute a weight map through miriad machinary that corresponds
     to the input image. The map is going to be the inverse of the primary beam
     squared
 
     Args:
         mir_app_img (Path): Miriad image that will have the weight map generated for
+        nu_bw (float): The bandwidth of the visibility file used to produce image, in Hertz
         rms (float): The RMS of the image, which is used in the scaling of the weight map.
 
     Returns:
@@ -38,6 +39,8 @@ def derive_weight_map(mir_app_img: Path, rms: float = 1.0) -> Path:
             f"out={str(mir_sens_img)}",
             "rms=1",
             "options=sensitivity",
+            f"bw={int(nu_bw/1e9)},10",
+            
         ]
     )
 
@@ -99,7 +102,7 @@ def apply_miriad_pb(fits_app_img: Path) -> None:
     logger.info(f"Created {mir_int_img}, exporting FITS image.")
     call(["fits", f"in={str(mir_int_img)}", f"out={str(fits_int_img)}", "op=xyout"])
 
-    derive_weight_map(mir_app_img=mir_app_img, rms=img_std)
+    derive_weight_map(mir_app_img=mir_app_img, nu_bw=nu_bw, rms=img_std)
 
     # Remove tthe temporary files generated and not needed
     remove_files_folders([mir_app_img, mir_int_img])
