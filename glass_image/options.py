@@ -5,6 +5,7 @@ from typing import NamedTuple
 
 class ImagerOptions(NamedTuple):
     rounds: int = 5
+    clean_up: bool = False
 
 class WSCleanCMD(NamedTuple):
     cmd: str

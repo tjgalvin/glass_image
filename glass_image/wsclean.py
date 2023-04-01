@@ -89,7 +89,7 @@ def generate_wsclean_cmd(
     -join-channels 
     -channels-out {options.channels_out} 
     -multiscale
-    -multiscale-scale-bias 0.6
+    -multiscale-scale-bias 0.9
     -fit-spectral-pol 3
     -data-column DATA 
     {MS}"""
@@ -148,7 +148,7 @@ def run_wsclean_cmd(
         remove_files_folders(
             list(work_dir.glob(f"{wsclean_cmd.outname}*dirty.fits"))
             + list(work_dir.glob(f"{wsclean_cmd.outname}*psf.fits"))
-            + list(work_dir.glob(f"{wsclean_cmd.outname}*residual.fits"))
+            # + list(work_dir.glob(f"{wsclean_cmd.outname}*residual.fits"))
         )
 
     if move_into is not None:

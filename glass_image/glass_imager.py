@@ -104,7 +104,7 @@ def image_cband(
             wsclean_img=wsclean_img,
             point=selfcal_point,
             wsclean_options=img_round_options.wsclean,
-            clean_up=clean_up,
+            clean_up=imager_options.clean_up,
         )
 
         logger.info(f"\n\nUpdating current MS from {point.ms} to {selfcal_point.ms}")
