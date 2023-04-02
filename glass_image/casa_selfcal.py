@@ -1,5 +1,6 @@
 """Steps and tasks for self-calibration
 """
+import shutil
 from pathlib import Path
 from time import sleep
 
@@ -19,6 +20,11 @@ def derive_apply_selfcal(in_point: Pointing, options: CasaSCOptions) -> Pointing
     outfield = f"{in_point.field}_{caltable}"
     outms = f"{outfield}.{'.'.join(str(in_point.ms.name).split('.')[1:])}"
     transform_ms_str = f"{outms}_transform"
+
+    # Creating return structure now. The output MS will be created either by:
+    # - the original MS being copied in the case where the field was blank and no cleaning was performed, or
+    # - self-calibration was performed
+    out_point = Pointing(workdir=in_point.workdir, field=in_point.field, ms=Path(outms))
 
     logger.info(f"MSTransforming to {transform_ms_str} with {options.nspw} SPWs")
     mstransform(
@@ -47,6 +53,15 @@ def derive_apply_selfcal(in_point: Pointing, options: CasaSCOptions) -> Pointing
         minsnr=0,
     )
 
+    caltable_path = Path(caltable)
+    if not caltable_path.exists():
+        logger.warn(f"{caltable} was not created. Returning {in_point.ms}. Will copy the MS into for later rounds. ")
+        
+        shutil.copytree(
+            in_point.ms, out_point.ms
+        )
+        return out_point
+        
     logger.info(f"Solutions derived. Applying to data. ")
 
     # This will create a CORRECTED_DATA columns
@@ -65,8 +80,6 @@ def derive_apply_selfcal(in_point: Pointing, options: CasaSCOptions) -> Pointing
         outputvis=outms,
         mode="channel_b",
     )
-
-    out_point = Pointing(workdir=in_point.workdir, field=in_point.field, ms=Path(outms))
 
     logger.info(f"Solutions applied. Created {out_point.ms}")
 

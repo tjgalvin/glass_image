@@ -109,10 +109,12 @@ def image_cband(
         )
 
         if img_round > 1:
-            zip_folder(point.ms, point.ms.with_suffix('ms.zip'))
+            zip_folder(point.ms, point.ms.with_suffix(point.ms.suffix + '.zip'))
 
         logger.info(f"\n\nUpdating current MS from {point.ms} to {selfcal_point.ms}")
         point = selfcal_point
+
+    zip_folder(point.ms, point.ms.with_suffix(point.ms.suffix + '.zip'))
 
     logger.info(f"\n\nFinished imaging {str(ms_path)}.")
 
