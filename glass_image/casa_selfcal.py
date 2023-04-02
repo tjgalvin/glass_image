@@ -56,14 +56,9 @@ def derive_apply_selfcal(in_point: Pointing, options: CasaSCOptions) -> Pointing
     in_ms_str = str(in_point.ms)
     split_ms_str = f"{in_ms_str}_split"
 
-    logger.debug(f"Sleeping for 10 seconds in an effort to free a lock")
-    sleep(10)
-
     split(vis=transform_ms_str, outputvis=split_ms_str, datacolumn="corrected")
 
     logger.info("Transforming to a single spectral window")
-    logger.debug(f"Sleeping for 10 seconds in an effort to free a lock")
-    sleep(10)
 
     cvel(
         vis=split_ms_str,
@@ -75,6 +70,6 @@ def derive_apply_selfcal(in_point: Pointing, options: CasaSCOptions) -> Pointing
 
     logger.info(f"Solutions applied. Created {out_point.ms}")
 
-    remove_files_folders([Path(file) for file in (transform_ms_str, split_ms_str)])
+    remove_files_folders([Path(file) for file in (caltable, transform_ms_str, split_ms_str)])
 
     return out_point
