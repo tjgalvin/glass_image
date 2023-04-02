@@ -7,6 +7,17 @@ from typing import List
 
 from glass_image.logging import logger
 
+def zip_folder(in_path: Path, out_zip: Path) -> None:
+
+            logger.info(f"Zipping {in_path}.")
+            shutil.make_archive(
+                str(out_zip),
+                'zip',
+                str(in_path)
+            )
+            shutil.rmtree(in_path)
+
+
 def ensure_dir_exists(target_dir: Path) -> None:
     if not target_dir.exists():
         raise FileNotFoundError(f"Miriad file {target_dir} not found. ")

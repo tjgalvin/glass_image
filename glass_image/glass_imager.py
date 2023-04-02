@@ -18,6 +18,7 @@ from glass_image.pointing import Pointing
 from glass_image.casa_selfcal import derive_apply_selfcal
 from glass_image.configuration import get_imager_options, get_round_options
 from glass_image.options import ImagerOptions, WSCleanOptions
+from glass_image.utils import zip_folder
 
 def image_round(
     wsclean_img: Path,
@@ -106,6 +107,9 @@ def image_cband(
             wsclean_options=img_round_options.wsclean,
             clean_up=imager_options.clean_up,
         )
+
+        if img_round > 1:
+            zip_folder(point.ms, point.ms.with_suffix('ms.zip'))
 
         logger.info(f"\n\nUpdating current MS from {point.ms} to {selfcal_point.ms}")
         point = selfcal_point
