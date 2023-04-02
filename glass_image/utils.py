@@ -3,19 +3,27 @@
 import shutil
 import subprocess
 from pathlib import Path
-from typing import List
+from typing import List, Optional
 
 from glass_image.logging import logger
 
-def zip_folder(in_path: Path, out_zip: Path) -> None:
+def zip_folder(in_path: Path, out_zip: Optional[Path] = None) -> None:
+    """Zip a directory and remove the original. 
 
-            logger.info(f"Zipping {in_path}.")
-            shutil.make_archive(
-                str(out_zip),
-                'zip',
-                str(in_path)
-            )
-            shutil.rmtree(in_path)
+    Args:
+        in_path (Path): The path that will be zipped up.
+        out_zip (Path, optional): Name of the output file. A zip extension will be added. Defaults to None.
+    """
+
+    out_zip = in_path if out_zip is None else out_zip
+
+    logger.info(f"Zipping {in_path}.")
+    shutil.make_archive(
+        str(out_zip),
+        'zip',
+        base_dir=str(in_path)
+    )
+    remove_files_folders([in_path])
 
 
 def ensure_dir_exists(target_dir: Path) -> None:
