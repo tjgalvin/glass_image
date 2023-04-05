@@ -12,6 +12,23 @@ from glass_image.utils import remove_files_folders
 from glass_image.options import CasaSCOptions
 
 def derive_apply_selfcal(in_point: Pointing, options: CasaSCOptions) -> Pointing:
+    """Perform self-calibration using CASA. The input measurement set, represented by
+    `in_point` should have a MODEL_DATA column populated. The routine will transform
+    the measurement set into one with the expected number of spectral windows before
+    `gaincal` is performed. Solutions are applied, and the freshly created CORRECTED_DATA
+    is split into a new measurement set, with said column renamed as `DATA`.
+    
+    This routine will create a new measurement set with a single `DATA` column. There
+    is no current facility to append `CORRECTED_DATA` columns to the base measurement
+    set in this code base. 
+
+    Args:
+        in_point (Pointing): Measurement set that has been populated with `MODEL_DATA`
+        options (CasaSCOptions): Specification of the self-calibration routine to apply
+
+    Returns:
+        Pointing: Self-calibrated measurement set
+    """
     logger.info(f"Will apply self-calibration to {in_point.ms}")
 
     caltable = f"pcal{options.round}"
