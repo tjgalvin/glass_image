@@ -28,6 +28,16 @@ def zip_folder(in_path: Path, out_zip: Optional[Path] = None) -> None:
 
 
 def ensure_dir_exists(target_dir: Path) -> None:
+    """Check to ensure that a directory exists. is intended for
+    confirming output directories are in placce. 
+
+    Args:
+        target_dir (Path): Directory that needs to exist
+
+    Raises:
+        FileNotFoundError: Raised when no file or folder is found
+        ValueError: Raised when a file is found and it not a directory
+    """
     if not target_dir.exists():
         raise FileNotFoundError(f"Miriad file {target_dir} not found. ")
 
@@ -36,6 +46,16 @@ def ensure_dir_exists(target_dir: Path) -> None:
 
 
 def remove_files_folders(paths_to_remove: List[Path]) -> List[Path]:
+    """Will remove a set of paths from the file system. If a Path points
+    to a folder, it will be recursively removed. Otherwise it is simply
+    unlinked. 
+
+    Args:
+        paths_to_remove (List[Path]): Set of Paths that will be removed
+
+    Returns:
+        List[Path]: Set of Paths that were removed
+    """
     
     files_removed = []
     
