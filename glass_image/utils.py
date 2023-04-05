@@ -16,6 +16,7 @@ def zip_folder(in_path: Path, out_zip: Optional[Path] = None) -> None:
     """
 
     out_zip = in_path if out_zip is None else out_zip
+    out_zip = Path('.') / out_zip.name
 
     logger.info(f"Zipping {in_path}.")
     shutil.make_archive(

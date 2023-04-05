@@ -18,8 +18,10 @@ def derive_apply_selfcal(in_point: Pointing, options: CasaSCOptions) -> Pointing
     logger.info(f"Will create solution table: {caltable}")
 
     outfield = f"{in_point.field}_{caltable}"
-    outms = f"{outfield}.{'.'.join(str(in_point.ms.name).split('.')[1:])}"
+    outms = in_point.ms.parent / f"{outfield}.{'.'.join(str(in_point.ms.name).split('.')[1:])}"
     transform_ms_str = f"{outms}_transform"
+
+    logger.info(f"Output measurement set: {outms}")
 
     # Creating return structure now. The output MS will be created either by:
     # - the original MS being copied in the case where the field was blank and no cleaning was performed, or
