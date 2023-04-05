@@ -18,7 +18,7 @@ def derive_apply_selfcal(in_point: Pointing, options: CasaSCOptions) -> Pointing
     logger.info(f"Will create solution table: {caltable}")
 
     outfield = f"{in_point.field}_{caltable}"
-    outms = in_point.ms.parent / f"{outfield}.{'.'.join(str(in_point.ms.name).split('.')[1:])}"
+    outms = str(in_point.ms.parent / f"{outfield}.{'.'.join(str(in_point.ms.name).split('.')[1:])}")
     transform_ms_str = f"{outms}_transform"
 
     logger.info(f"Output measurement set: {outms}")
