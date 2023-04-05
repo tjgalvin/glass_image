@@ -24,6 +24,24 @@ def create_clean_mask(
     wsclean_img: Optional[Path] = None,
     workdir: Optional[Path] = None,
 ) -> None:
+    """Extract a clean mask for a pointing from a larger masked image. Idea being to image
+    the GLASS pointings individually, co-added to get optimal sensitivity, and then create
+    a mask of pixels about some signal-to-noise cut (this last stage is outside the scope
+    of this function). 
+    
+    Once this mask has been extracted then it may be supplied to wsclean. This might enable
+    wsclean to clean a lot more aggressively with less worry of cleaning suprious sources. 
+    
+    A dummy FITS header which contains the WSC to extract upon by creating a dirty 
+    image with wsclean with representative options. 
+
+    Args:
+        ms_path (Path): The measurement set that a clean mask will be extracted for
+        imager_config (Path): WSClean imaging settings. These need to be representative of those in the deep clean
+        mosaic_mask (Path): Path to the mask of the deep co-added image
+        wsclean_img (Optional[Path], optional): Path to singularity image containing wsclean. Defaults to None.
+        workdir (Optional[Path], optional): The directory where work will be carried out. Defaults to None.
+    """
     assert ms_path.exists(), f"MS {ms_path} does not exist"
     assert (
         imager_config.exists()
@@ -61,6 +79,11 @@ def create_clean_mask(
 
 
 def get_parser() -> ArgumentParser:
+    """Return a generic argurment parser for the clean mask task
+
+    Returns:
+        ArgumentParser: Argument parser with options populated
+    """
     parser = ArgumentParser(
         description="Extract a clean mask to use from a larger mosaic"
     )
@@ -88,6 +111,8 @@ def get_parser() -> ArgumentParser:
 
 
 def cli() -> None:
+    """CLI entry point for clean mask
+    """
     parser = get_parser()
 
     args = parser.parse_args()

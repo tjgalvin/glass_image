@@ -65,6 +65,16 @@ def remove_nonconformant_timesteps(target_ms: Path, baselines: int=15) -> None:
 
     
 def extract_field_name(miriad_vis: Path) -> str:
+    """Parses the name of a miriad visibilty file to extract the 
+    name of the field. This assumes to (miriad standard) naming 
+    convention of `field.frequency`
+
+    Args:
+        miriad_vis (Path): Path to the miriad visibility file
+
+    Returns:
+        str: Extract field name
+    """
     logger.info(f"Extracting field name from {miriad_vis}")
     name = miriad_vis.name.split(".")[0]
 
@@ -81,6 +91,21 @@ def convert_miriad_to_ms(
     field_name: Optional[str] = None,
     force_conformant_ms: bool = False
 ) -> Path:
+    """Converts a miriad visibility file into a measurement set. Temporary files
+    created in this process can optionally be removed. Internally the CASA task
+    `importmiriad` is used to handle the conversion.
+
+    Args:
+        miriad_vis (Path): Name of the miriad visivility file to convert. 
+        output_dir (Path): Location to write the output measurement set to.
+        clean_up (bool, optional): Remove files related to the transformation of the formats. Defaults to True.
+        field_out (bool, optional): Create a folder for the field to place the measurement set into. If True and `field_name` is unset the name is extracted from the miriad visibility name. Defaults to False.
+        field_name (Optional[str], optional): Provide a specific field name. Defaults to None.
+        force_conformant_ms (bool, optional): Attempt to applied data cleaning operations to ensure the output measurement set is correctly formed. This is largely unnecesssary since `importmiriad` was adopted. Defaults to False.
+
+    Returns:
+        Path: Path to the output measurement set. 
+    """
     # will raise error when does not exist
     ensure_dir_exists(miriad_vis)
 
@@ -116,6 +141,11 @@ def convert_miriad_to_ms(
 
 
 def get_parser() -> ArgumentParser:
+    """Generates the arguement parser for the glass_vis2ms task. 
+
+    Returns:
+        ArgumentParser: Parser with populated options. 
+    """
     parser = ArgumentParser(
         description="Convert a miriad visibility file into a measurement set. "
     )
@@ -157,6 +187,8 @@ def get_parser() -> ArgumentParser:
 
 
 def cli() -> None:
+    """CLI entry point for the `glass_vis2ms` program. 
+    """
     parser = get_parser()
 
     args = parser.parse_args()

@@ -14,6 +14,14 @@ OPTIONTYPES = ('casasc', 'wsclean')
 
 
 def load_yaml_configuration(yaml_config: Path) -> Dict[Any, Any]:
+    """Load in a image configuration file that directs imaging and self-calibration
+
+    Args:
+        yaml_config (Path): Path to a YAML configuration file
+
+    Returns:
+        Dict[Any, Any]: Loaded imager parame
+    """
     logger.info(f"Loading configuration file {str(yaml_config)}")
     with open(yaml_config, 'r') as in_config:
         config = yaml.load(
@@ -24,6 +32,14 @@ def load_yaml_configuration(yaml_config: Path) -> Dict[Any, Any]:
     return config 
 
 def verify_configuration(yaml_config: Path):
+    """Perorms basic sanity checks against an imager configuration file
+
+    Args:
+        yaml_config (Path): Path to the imager configuration file
+
+    Raises:
+        ImagerConfigurationError: Errors detected in the configuration file
+    """
     config = load_yaml_configuration(yaml_config=yaml_config)
 
     issues = []
@@ -37,6 +53,18 @@ def verify_configuration(yaml_config: Path):
         raise ImagerConfigurationError("\n".join(issues))
 
 def get_imager_options(yaml_config: Path) -> Dict[Any, Any]:
+    """Returns settings related to the general imager properties
+    as a dictionary. 
+
+    Args:
+        yaml_config (Path): Path to YAML file containing the imager configuration
+
+    Raises:
+        ImagerConfigurationError: Error raised when no glass entry found. 
+
+    Returns:
+        Dict[Any, Any]: Imager related options
+    """
     config = load_yaml_configuration(yaml_config)
     
     if 'glass' not in config.keys():
@@ -45,6 +73,24 @@ def get_imager_options(yaml_config: Path) -> Dict[Any, Any]:
     return config['glass']
 
 def get_round_options(yaml_config: Path, img_round: int) -> ImageRoundOptions:
+    """Returns options specific to a single imaging / self-calibration round. If
+    the is the first image round, generic self-calibration options are return. In
+    the imager configuration, round 0 corresponds to the initial image _outside_
+    the self-calibration->image loop. 
+    
+    Rounds >= 1 are where both self-calibration and wsclean options are returned
+    with informative (specified) parameters. 
+
+    Args:
+        yaml_config (Path): Path to the imager configuration file
+        img_round (int): Imager round. 0 implies first image with no self-calibration. 
+
+    Raises:
+        ImagerConfigurationError: Raised when configuration file not correctly formed. 
+
+    Returns:
+        ImageRoundOptions: Imaging and self-calibration options
+    """
     
     config = load_yaml_configuration(yaml_config)
     
