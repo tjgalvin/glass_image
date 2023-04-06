@@ -69,7 +69,7 @@ def derive_apply_selfcal(in_point: Pointing, options: CasaSCOptions) -> Pointing
         caltable=caltable,
         solint=options.solint,
         calmode=options.calmode,
-        minsnr=0,
+        minsnr=options.minsnr,
     )
 
     caltable_path = Path(caltable)
