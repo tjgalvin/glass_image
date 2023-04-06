@@ -27,6 +27,7 @@ class WSCleanOptions(NamedTuple):
     multiscale: bool = False
     multiscale_scale_bias: float = 0.9
     fit_spectral_pol: int = 4
+    robust: int = 0.5
 
 class CasaSCOptions(NamedTuple):
     solint: str = "60s"

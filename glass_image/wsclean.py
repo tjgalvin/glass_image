@@ -70,6 +70,7 @@ def generate_wsclean_cmd(
             f"psfw{options.psfwindow}_"
             f"mt{options.maskthresh}_"
             f"at{options.autothresh}_"
+            f"rob{options.robust}_"
             f"round{options.round}"
         )
         mask_options = (
@@ -99,7 +100,7 @@ def generate_wsclean_cmd(
     -name {outname} 
     -size {options.size} {options.size} 
     -scale 0.3asec 
-    -weight briggs 0.5 
+    -weight briggs {options.robust} 
     -pol I 
     -use-wgridder 
     -join-channels 
@@ -222,7 +223,7 @@ def generate_wsclean_header(wsclean_img: Path, point: Pointing,options: WSCleanO
     -name {outname} 
     -size {options.size} {options.size} 
     -scale 0.3asec 
-    -weight briggs 0.5 
+    -weight briggs {options.robust} 
     -pol XX 
     -use-wgridder 
     -join-channels 
