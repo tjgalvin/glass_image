@@ -87,6 +87,10 @@ def generate_wsclean_cmd(
     else:
         multiscale = ""
 
+    other_options = ""
+    if options.stop_negative:
+        other_options = f" -stop-negative "
+
     logger.debug(f"{outname=}")
     logger.debug(f"{mask_options}")
 
@@ -107,6 +111,7 @@ def generate_wsclean_cmd(
     {multiscale}
     -channels-out {options.channels_out} 
     -fit-spectral-pol {options.fit_spectral_pol}
+    {other_options}
     -data-column DATA 
     {MS}"""
 
