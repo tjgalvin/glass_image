@@ -35,6 +35,7 @@ class CasaSCOptions(NamedTuple):
     nspw: int = 4
     calmode: str = "p"
     round: int = 0
+    minsnr: float = 0.
 
 class ImageRoundOptions(NamedTuple):
     wsclean: WSCleanOptions
