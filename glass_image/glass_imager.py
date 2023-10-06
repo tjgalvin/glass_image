@@ -20,6 +20,7 @@ from glass_image.configuration import get_imager_options, get_round_options
 from glass_image.options import ImagerOptions, WSCleanOptions
 from glass_image.utils import zip_folder
 
+
 def image_round(
     wsclean_img: Path,
     point: Pointing,
@@ -29,11 +30,13 @@ def image_round(
     logger.info(f"Will be imaging {point}")
     logger.info(f"Using container: {wsclean_img=}")
 
-    wsclean_cmd = generate_wsclean_cmd(
-        point=point, options=wsclean_options
-    )
+    wsclean_cmd = generate_wsclean_cmd(point=point, options=wsclean_options)
 
-    output_dir = Path(f"round_{wsclean_options.round}") if wsclean_options.round > 0 else Path("no_selfcal")
+    output_dir = (
+        Path(f"round_{wsclean_options.round}")
+        if wsclean_options.round > 0
+        else Path("no_selfcal")
+    )
     assert not output_dir.exists(), f"Output folder {output_dir} already exists. "
 
     run_wsclean_cmd(
@@ -52,20 +55,26 @@ def image_cband(
     clean_up: bool = True,
 ) -> None:
     assert ms_path.exists(), f"MS {ms_path} does not exist"
-    assert imager_config.exists(), f"Imager configuration {imager_config} does not exist"
+    assert (
+        imager_config.exists()
+    ), f"Imager configuration {imager_config} does not exist"
 
     if workdir is not None:
         logger.info(f"Changing directory to: {workdir}")
         os.chdir(workdir)
     else:
-        workdir = Path(os.getcwd())
+        workdir = Path(ms_path.parent)
 
     # Make a copy of the configuration file to the work directory
-    dest_config_file = workdir / imager_config.name 
-    if imager_config != dest_config_file: 
+    dest_config_file = workdir / imager_config.name
+    if imager_config != dest_config_file:
         if dest_config_file.exists():
             logger.warn(f"Removing existing {dest_config_file}. ")
-        shutil.copy(imager_config, dest_config_file)
+        try:
+            shutil.copy(imager_config, dest_config_file)
+        except FileExistsError:
+            # Multiprocessing environment might try to copy to the same work dir
+            pass
 
     logger.debug(f"Input MS: {ms_path}")
     name_comps = ms_path.name.split(".")
@@ -83,7 +92,7 @@ def image_cband(
 
     logger.debug(f"Getting Imager related options.")
     imager_options = ImagerOptions(**get_imager_options(imager_config))
-    
+
     img_round_options = get_round_options(imager_config, img_round=0)
 
     image_round(
@@ -91,13 +100,12 @@ def image_cband(
     )
 
     # Remember the range command is not inclusive
-    for img_round in range(1, imager_options.rounds+1):
+    for img_round in range(1, imager_options.rounds + 1):
         img_round_options = get_round_options(imager_config, img_round=img_round)
-        
+
         logger.info(f"\n\nAttempting selcalibration for round {img_round}")
         selfcal_point = derive_apply_selfcal(
-            in_point=point, 
-            options=img_round_options.casasc
+            in_point=point, options=img_round_options.casasc
         )
 
         logger.info(f"\n\nRunning imaging for round {img_round}")
@@ -109,14 +117,15 @@ def image_cband(
         )
 
         if img_round > 1:
-            zip_folder(point.ms, point.ms.with_suffix(point.ms.suffix + '.zip'))
+            zip_folder(point.ms, point.ms.with_suffix(point.ms.suffix + ".zip"))
 
         logger.info(f"\n\nUpdating current MS from {point.ms} to {selfcal_point.ms}")
         point = selfcal_point
 
-    zip_folder(point.ms, point.ms.with_suffix(point.ms.suffix + '.zip'))
+    zip_folder(point.ms, point.ms.with_suffix(point.ms.suffix + ".zip"))
 
     logger.info(f"\n\nFinished imaging {str(ms_path)}.")
+
 
 def get_parser() -> ArgumentParser:
     parser = ArgumentParser(description="A simple imaging script for GLASS data")
